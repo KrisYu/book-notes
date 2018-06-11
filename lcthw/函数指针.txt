@@ -1,0 +1,29 @@
+- 函数指针
+
+函数指针的编写方法：
+
+编写函数: int callme(int a, int b)
+指针语法包装: int (*callme)(int a, int b)
+改成指针名字: int (*compare_cb)(int a, int b)
+
+int (*tester)(int a, int b) = sorted_order;
+
+tester(2, 3)的结果和sorted_order(2, 3)结果一样，调用sorted_order函数
+
+即使一个函数返回的指针，那么它的编写方法依旧一致：
+
+编写： char *make_coolness(int awesome_levels);
+包装： char *(*make_coolness)(int awesome_levels)
+重命名： char *(*coolness_cb)(int awesome_levels)
+
+这里我们用这样的 typedef之后：
+
+typedef int (*compare_cb)(int a, int b);
+
+使用:
+int *bubble_sort(int *numbers, int count, compare_cb cmp){
+  ...
+  ...if (cmp(target[j], target[j+1]) > 0)...
+  
+  ...
+}

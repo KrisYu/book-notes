@@ -1,0 +1,18 @@
+
+### Makefile:
+
+告诉c程序如何构建：
+
+例子：
+
+
+CFLAGS=-Wall -g
+
+clean:
+
+
+make clean: 
+执行 rm -f ex1: 删除之前生成的
+
+make: 
+按照 CFLAGS=-Wall -g规则来make

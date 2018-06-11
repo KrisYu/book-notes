@@ -1,0 +1,40 @@
+- 结构体
+
+
+struct Person{
+  char *name;
+  int age;
+  int height;
+  int weight;
+};
+
+结构体分配的指针应该是指向 char * , 然后3个int
+
+
+struct Person *Person_create(char *name, int age, int height, int weight) {
+  struct Person *who = malloc(sizeof(struct Person));
+  assert(who != NULL);
+
+  who->name = strdup(name);
+  who->age = age;
+  who->height = height;
+  who->weight = weight;
+
+  return who;
+}
+
+ The strdup() function allocates sufficient memory for a copy of the
+     string s1, does the copy, and returns a pointer to it.  The pointer may
+     subsequently be used as an argument to the function free(3).
+
+
+void Person_destory(struct Person *who) {
+  assert(who != NULL);
+
+  free(who->name);
+  free(who);
+}
+
+free就free malloc的部分，int 这些就算了。
+
+x->y 是 (*x).y的简写

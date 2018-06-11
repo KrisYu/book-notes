@@ -1,0 +1,17 @@
+- 栈（stack） vs 堆（heap）
+
+老话题， malloc from heap ， otherwise from stack
+
+stackoverflow错误： 如果你在栈上存放了大量数据，可能会产生stackoverflow错误，这种状况用malloc放在堆上
+
+segment fault: 如果你获取了一个指向栈上变量的指针，并且将它用于穿残或从函数返回。
+
+foo(){
+  foo();
+}
+
+void main(){
+  foo();
+}
+
+以上就会产生segment fault.

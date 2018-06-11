@@ -1,0 +1,44 @@
+- 字符串就是字节数组
+
+在C中： 字符串就是字节数组
+
+char name[] = "Zed"; sizeof 是 4，会计算最后的一个 '\0'
+
+
+char name[4] = {'a'};
+
+printf("name each: %c %c %c %c\n",
+        name[0], name[1],
+        name[2], name[3] );
+
+printf("name: %s\n", name);
+
+都只会打印出来 a，是因为a之后的空间都用'\0'表示？
+
+如果想要正确打印需要：
+
+// setup the name
+name[0] = 'Z';
+name[1] = 'e';
+name[2] = 'd';
+name[3] = '\0';
+
+printf("name each: %c %c %c %c\n",
+                name[0], name[1],
+                name[2], name[3] );
+
+// print the name like a string
+printf("name: %s\n", name);
+
+// another way to use name
+char *another = "Zed";
+
+printf("another each:%c %c %c %c \n",
+        another[0], another[1],
+        another[2], another[3] );
+
+如果我们尝试将 name = array: 报错 array type 'char [4]' is not assignable
+要么我们就一个一个赋值，要么我们用strcpy 或者 strcat
+
+
+char *str 和 char str[] 构建数组，所以字符串数组用 char *states[] 构建, 比如我们最常见到的 char *argv[]

@@ -1,0 +1,27 @@
+- 指向‘指向字符的指针’的指针
+
+char *names[] = {"Alan", "Frank","Mary", "John", "Lisa"};
+
+除了最常见的print方法来打印这个数组以外，我们还用：
+
+
+char **cur_name = names;
+
+// second way using pointers
+for (i = 0; i < count; i++) {
+  printf("%s has %d years alive.\n",*(cur_name + i), *(cur_age + i) );
+}
+
+printf("----\n");
+
+// third way, pointers are just arrays
+for (i = 0; i < count; i++) {
+  printf("%s has %d years alive.\n",cur_name[i], cur_age[i] );
+}
+
+printf("----\n");
+
+// fourth way with pointers in a stupid complex way
+for(cur_name = names, cur_age = ages; (cur_age - ages) < count; cur_name++, cur_age++){
+  printf("%s has %d years alive\n",*cur_name, *cur_age );
+}
