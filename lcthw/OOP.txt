@@ -37,7 +37,7 @@ void *Object_new(size_t size, Object proto, char *description);
 #define _object_h
 #endif
 
-防止多饮用的
+防止多引用的
 
 #define NEW(T, N) Object_new(sizeof(T), T##Proto, N)
 模板函数：  左边会展开为右边， T##Proto 会被写成比如 NEW(ROOM, "Hello") 会变成 RoomProto
@@ -129,17 +129,12 @@ void *Object_new(size_t size, Object proto, char *description){
 
 这之中最重要的是 void *Object_new(size_t size, Object proto, char *description)
 
-这个Object_new函数 take in 一个size， 一个 Object proto，这里的proto是prototype的缩小， 一个 description
+这个Object_new函数 take in 一个size， 一个 Object proto，这里的proto是prototype的缩写， 一个 description
 返回一个 void * 指针
 
 
 前半部分来看，如果Object原型没有定义这些‘原型函数’，那么我们就使用默认的模板。
 将object这个结构体中包含的函数指针给定义。
-
-同时这也是后面的 monster->_(description) make sense的地方：
-
-monster->_(description)  根据最上面的 #define _(N) proto.N 翻译一下应该是： monster->proto.description
-改成这个有效|||
 
 否则我们使用proto 定义的。
 
@@ -224,7 +219,7 @@ int Map_init(void *self);
 新定义了三个‘对象’： Map， Monster， Room
 
 
-可以看出来我们的每个新‘对象’都包含有Object proto这个‘原型’
+可以看出来我们的每个新‘对象’都包含有Object proto这个原型
 甚至 Room也是一个类似linked list的结构，中间有自己指向自己的指针
 Map 有proto， Room start 和 location的指针
 
@@ -237,7 +232,7 @@ quote:
 - 接下来它使用Object *el指针，通过*el =    proto来设置这块内存的内容。要记住你可以复制结构体，而且*el的意思是“el所指向对象的值”，所以整条语句意思是“将el所指向对象的值赋为proto”。
 - 由于这个谜之结构体被填充为来自proto的正确数据，这个函数接下来可以在Object上调用init，或者destroy。但是最神奇的一部分是无论谁调用这个函数都可以将它们改为想要的东西。
 
-这就是object的神奇之处，它相当于变成了一个模板，谁都可以调用它来生成‘object’.
+
 
 
 // ex19.c
@@ -448,9 +443,36 @@ int main(int argc, char const *argv[]) {
 
 
 
+
 先看一些语法糖的部分：
 
-monster->_(description) 相当于： monster->Monsterproto.description (?)
+monster->_(description)  根据最上面的 #define _(N) proto.N 翻译一下应该是： monster->proto.description
+改成这个有效||| 虽然这里有点疑惑，为什么不是 monster-> Monsterproto.description 之类的（？
+
+原来我的理解有点问题，这里的Object proto在每个‘对象’ Map， Room， Monster的第一位，所以我们用这个‘monster->proto.description’才是正解。
+同时之前也有说明为什么指针可行，因为每个’对象’的第一位是Object proto，所以我们的指针可以正确找到它，再者这个指针的名字是变化的，虽然类型都是Object。
+
+看一看：
+
+MonsterProto， RoomProto, MapProto 虽然都是proto对象，但是它们的名字是随着NEW变化。
+
+next->_(describe)(next) = next->proto.describe(next);
+
+这个用的函数是  void (*describe)(void *self);
+
+
+看这个：
+
+Object MonsterProto = {
+  .init = Monster_init,
+  .attack = Monster_attack
+};
+
+这是我们声明了 MonsterProto变量，使用了 C99中struct的designated initializer （https://stackoverflow.com/questions/330793/how-to-initialize-a-struct-in-accordance-with-c-programming-language-standards
+
+// 针对MonsterProto，因为其实所有函数都是默认写好在 Object_new 中，我们可以修改其中的一些函数。
+同时我们来覆盖了默认的init 和 attack 方法。
+
 
 因为 monster 这个结构体是： 
 
@@ -462,12 +484,6 @@ struct Monster {
 所以对于hit_points,我们可以直接 monster->hit_points
 
 
-Object MonsterProto = {
-  .init = Monster_init,
-  .attack = Monster_attack
-};
-
-针对MonsterProto，因为其实所有函数都是默认写好在 Object_new 中，我们可以修改其中的一些函数。
 
 
 

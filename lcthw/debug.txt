@@ -1,0 +1,215 @@
+// chapter 20
+
+// dbg.h
+
+#ifndef __dbg_h__
+#define __dbg_h__
+
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+
+
+#ifdef NDEBUG
+#define debug(M, ...)
+#else
+#define debug(M, ...) fprintf(stderr, "DEBUG %s %d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#endif
+
+#define clean_errno() (errno == 0 ? "None" : strerror(errno))
+
+#define log_err(M, ...) fprintf(stderr, "[ERROR] (%s:%d: errno: %s) " M "\n",__FILE__, __LINE__, clean_errno(), ##__VA_ARGS__)
+#define log_warn(M, ...) fprintf(stderr, "[WARN] (%s:%d: errno: %s) " M "\n",__FILE__, __LINE__, clean_errno(), ##__VA_ARGS__)
+#define log_info(M, ...) fprintf(stderr, "[INFO] (%s:%d)" M "\n",__FILE__, __LINE__, ##__VA_ARGS__)
+
+#define check(A, M, ...) if (!(A)) { log_err(M, ##__VA_ARGS__); errno = 0; goto error;}
+#define sentinel(M, ...) {log_err(M, ##__VA_ARGS__); errno = 0; goto error;}
+#define check_mem(A) check((A), "Out of memory.")
+#define check_debug(A, M, ...) if (!(A)) { debug(M, ##__VA_ARGS__); errno = 0; goto error;}
+
+#endif
+
+
+
+注意这里有区别的：
+ifndef 和 ifdef
+
+#ifdef NDEBUG
+#define debug(M, ...) 代表 如果#define NDEBUG，那么我们就用这个debug函数（不输出的debug函数
+否则
+#define debug(M, ...) fprintf(stderr, "DEBUG %s %d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+用这个输出的debug函数
+
+这个替代函数最后一个是... 可变参数函数
+它实际上做的事是：
+
+debug("Age: %d, name: %s", age, name) 会被替换为
+
+fprintf(stderr, "DEBUG %s %d: " "Age: %d, name: %s" "\n", __FILE__, __LINE__, age, name)
+
+__FILE__ 是文件，__LINE__是行数，然后M被替代为可见部分，感谢##__VA_ARGS__替换为参数
+
+log_err 和 log_warn 很类似，打印出来信息，然后清除errono，清除errno的时候
+
+     The strerror() function accepts an error number argument errnum and returns a pointer to the corresponding message string.
+     
+所以除了FILE，LINE以外我们还有%s为errno准备，M依旧其替换作用
+
+
+log_info 因为是默认没有犯错，所以我们就做打印这件事
+
+
+#define check(A, M, ...) if (!(A)) { log_err(M, ##__VA_ARGS__); errno = 0; goto error;}
+
+check做的事是检查A是否为真，如果不为真，那么我们打印出错误，把默认的全局 errno 置为0，然后跳到error处？
+sentinel已经表明我们已经默认M为错，并且打印出来，然后做类似的事情（这也是作者提到把sentinel放到任何不应该执行的地方 if/else, switch的死角
+check_mem 比较简单，只是检查内存
+check_debug 如果A不为真，那么我们debug 同事 errno置0 跳到错误处
+
+
+
+// ex20.c
+#define NDEBUG
+
+#include "dbg.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+
+
+void test_debug() {
+  // notice you don't need the \n
+  debug("I have Brown Hair.");
+
+  // passing in arguments like printf
+  debug("I am %d years old.", 37);
+}
+
+
+void test_log_err() {
+  log_err("I believe everything is broken.");
+  log_err("There are %d problems in %s.", 0, "space");
+}
+
+
+void test_log_warn() {
+  log_warn("You can safely ignore this.");
+  log_warn("Maybe conside looking at :%s.", "/etc/password");
+}
+
+void test_log_info() {
+  log_info("Well I did something mundane.");
+  log_info("It happend %f times today.", 1.3f);
+}
+
+int test_check(char *file_name){
+  FILE *input = NULL;
+  char *block = NULL;
+
+  block = malloc(100);
+  check_mem(block);
+
+  input = fopen(file_name, "r");
+  check(input, "Failed to open %s.", file_name);
+
+  free(block);
+  fclose(input);
+  return 0;
+
+  error:
+    if(block) free(block);
+    if(input) fclose(input);
+    return -1;
+}
+
+int test_sentinel(int code){
+  char *temp = malloc(100);
+  check_mem(temp);
+
+  switch (code) {
+    case 1:
+        log_info("It worked.");
+        break;
+    default:
+        sentinel("I shouldn't run.");
+  }
+
+  free(temp);
+  return 0;
+
+  error:
+    if(temp) free(temp);
+    return -1;
+}
+
+int test_check_mem(){
+  char *test = NULL;
+  check_mem(test);
+
+  free(test);
+  return 1;
+
+  error:
+    if(test) free(test);
+    return -1;
+}
+
+int test_check_debug(){
+  int i = 0;
+  check_debug( i != 0, "Oops, I was 0.");
+
+  return 0;
+
+  error:
+    return -1;
+}
+
+
+int main(int argc, char *argv[]) {
+  check(argc == 2, "Need an argument.");
+
+  // notice test_debug don't print because I do #define NDEBUG in the header
+  test_debug();
+
+  // [ERROR] (ex20.c:16: errno: None) I believe everything is broken.
+  //  and for the 'None' here, check clean_errno
+  // [ERROR] (ex20.c:17: errno: None) There are 0 problems in space.
+  test_log_err();
+
+  // [WARN] (ex20.c:22: errno: None) You can safely ignore this.
+  // [WARN] (ex20.c:23: errno: None) Maybe conside looking at :/etc/password.
+  test_log_warn();
+
+  // [INFO] (ex20.c:27)Well I did something mundane.
+  // [INFO] (ex20.c:28)It happend 1.300000 times today.
+  test_log_info();
+
+  // This should work, so we don't have any output
+  // and as for check, we don't have anyout, read dbg.h
+  check(test_check("ex20.c") == 0, "failed with ex20.c");
+
+  // [ERROR] (ex20.c:39: errno: No such file or directory) Failed to open test.
+  check(test_check(argv[1]) == -1, "failed with argv");
+
+  // [INFO] (ex20.c:57)It worked. we use log_info to print out result.
+  check(test_sentinel(1) == 0, "test_sentinel failed");
+
+  // [ERROR] (ex20.c:60: errno: None) I shouldn't run.
+  check(test_sentinel(100) == -1, "test_sentinel failed");
+
+  // [ERROR] (ex20.c:73: errno: None) Out of memory.
+  check(test_check_mem() == -1, "test_check_mem failed");
+
+  // no error, so we don't see any output
+  check(test_check_debug() == -1, "test_check_debug failed");
+
+  return 0;
+
+error:
+  return 1;
+}
+
+
+- 很有意思，通过在header部分#define NDEBUG 和不做这件事，可以简单的控制debug function的输出
+- 除了这样define以外我们还可以 CFLAGS=-Wall -g -D NDEBUG 来做到，一样的道理
+- 包含函数名字也很简单 再加上 %s 和 __FUNCTION__ √
