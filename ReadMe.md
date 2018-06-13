@@ -4,9 +4,15 @@
   books
 
 - [x] iOS编程（第4版）: [Exerice Projects](https://github.com/KrisYu/iOS-Programming-The-Big-Nerd-Ranch-Guide)
-- [x] 函数式 Swift [代码笔记](objccn-functional-swift)
+- [ ] 函数式 Swift [代码笔记](objccn-functional-swift)
 - [ ] Objective-C高级编程 ： iOS与OS X多线程和内存管理
 - [ ] Programming with Objective C : [中文版](https://github.com/L1l1thLY/Programming-with-Objective-C-in-Chinese)
+
+make my life easier:
+
+- gcc run oc file: `gcc main.m -o main -framework Foundation`
+- clang run oc files: `clang -fobjc-arc main.m XYZShootingPerson.m XYZPerson.m -o main`
+
 
 
 learn c the hard way
@@ -19,6 +25,7 @@ learn c the hard way
 - [x] 堆vs栈: [解答](lcthw/堆vs栈.txt)
 - [x] 函数指针: [解答](lcthw/函数指针.txt)
 - [x] OOP: [解答](lcthw/OOP.txt)
+- [x] debug marco: [解答](lcthw/debug.txt)
 
 
 thoughts:
@@ -33,6 +40,11 @@ thoughts:
 - [x] id: [解答](thoughts/id.md)
 - [x] instancetype: [解答](thoughts/instancetype.md)
 - [x] blocks: [解答](thoughts/blocks.md)
+- [x] KVC & KVO: [解答](thoughts/KVC & KVO.md)
+- [x] [KVC & KVO on objio](https://objccn.io/issue-7-3/): [解答](thoughts/KVC & KVO2.md)
+- [x] Runtime: [解答](thoughts/Runtime.md)
+- [x] UIEdgeInsects: 插入间隔区域。正值表示间隔值，负值表示超出参照物的距离
+
 
 Effective Objective-C:
 
@@ -49,3 +61,13 @@ Effective Objective-C:
 - [x] 理解objc-msgSend的作用： [解答](EOC/EOC11.md)
 - [x] 理解消息转发机制： [解答](thoughts/消息转发.md)
 - [x] 用“方法调配技术“调试”黑和方法“： [解答](thoughts/EOC13.md)
+- [x] 理解‘类对象’的用意： 参见上面的Runtime部分
+- [x] 用前缀避免命名空间冲突：[解答](EOC/EOC15.md)
+- [x] 提供‘全能初始化方法’：[解答](EOC/EOC16.md)
+- [x] 实现description方法：覆写description/debugDescription方法，方便debug
+- [x] 尽量使用不可变对象： 声明 nonatomic, readonly, copy/assign
+- [x] 使用清晰而协调的命名方式
+- [x] 为私有方法名添加前缀：加上比如这样的前缀：p_
+- [x] 理解Objective-C的错误模型： [解答](EOC/EOC21.md)
+- [x] 理解NSCopying协议： [解答](EOC/EOC22.md)
+- [x] 通过委托与数据源协议进行对象间通信
