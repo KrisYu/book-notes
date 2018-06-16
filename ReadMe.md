@@ -45,6 +45,9 @@ learn c the hard way
 - [x] view hierarchy:
 - [x] addSubview vs insertSubview(_:aboveSubview:) ...
 - [x] print pointer address for class: `String(describing: Unmanaged.passUnretained(self).toOpaque())`
+- [x] willSet 和 didSet 如何能初始化时被调用： [解答](thoughts/willset.md)
+- [x] Swift introspection: type(of: application) 也有 isMemberOf
+
  
 
 
@@ -54,7 +57,7 @@ thoughts:
 - [x] Category中添加属性: [解答](thoughts/Category添加属性.md)
 - [x] OC中类的扩展extension : [解答](thoughts/类的扩展.md)
 - [x] 协议protocol： [解答](thoughts/协议.md)
-- [x] 不开Xcode run oc代码 & oc转换为cpp：[解答](thoughts/通过Terminal 来run oc file.md)
+- [x] 不开Xcode run oc代码 & oc转换为cpp：[解答](thoughts/Terminal_run_oc_file.md)
 - [x] ARC内存管理 strong/weak/copy: [解答](thoughts/ARC自动内存管理.md)
 - [x] 方法，消息和选择器： [解答](thoughts/方法，消息和选择器.md)
 - [x] id: [解答](thoughts/id.md)
@@ -90,10 +93,10 @@ Effective Objective-C:
 - [x] 为私有方法名添加前缀：加上比如这样的前缀：p_
 - [x] 理解Objective-C的错误模型： [解答](EOC/EOC21.md)
 - [x] 理解NSCopying协议： [解答](EOC/EOC22.md)
-- [x] 通过委托与数据源协议进行对象间通信
-- [ ] 将类的实现代码分散到便于管理的数个分类之中
-- [ ] 总是为第三方类的分类名称加前缀
-- [ ] 勿在分类中声明属性
-- [ ] 使用‘class-continuation分类’隐藏实现细节
+- [x] 通过委托与数据源协议进行对象间通信: 参照上方protocol部分
+- [x] 将类的实现代码分散到便于管理的数个分类之中: [解答](EOC/EOC24.md)
+- [x] 总是为第三方类的分类名称加前缀: [解答](EOC/EOC25.md)
+- [x] 勿在分类中声明属性: [解答](EOC/EOC26.md)
+- [ ] 使用‘class-continuation分类’隐藏实现细节: [解答](EOC/EOC27.md)
 - [ ] 通过协议提供匿名对象
 - [x] 理解引用计数: 上面thoughts部分 -> ARC内存管理 strong/weak/copy [补充](EOC/EOC29.md)
