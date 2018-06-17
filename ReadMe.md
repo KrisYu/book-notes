@@ -6,14 +6,15 @@
 - [x] iOS编程（第4版）: [Exerice Projects](https://github.com/KrisYu/iOS-Programming-The-Big-Nerd-Ranch-Guide)
 - [ ] 函数式 Swift [代码笔记](objccn-functional-swift)
 - [ ] Objective-C高级编程 ： iOS与OS X多线程和内存管理
-- [ ] Programming with Objective C : [中文版](https://github.com/L1l1thLY/Programming-with-Objective-C-in-Chinese)
+- [x] Programming with Objective C : [中文版](https://github.com/L1l1thLY/Programming-with-Objective-C-in-Chinese)
 
-Xcode skills make my life easier:
+skills make my life easier:
 
 - gcc run oc file: `gcc main.m -o main -framework Foundation`
 - clang run oc files: `clang -fobjc-arc main.m XYZShootingPerson.m XYZPerson.m -o main`
 - Xcode快速添加documentation： command + option + /
 - Xcode fold/unfold function: command+ shift+ ←\→
+- 快速知道一个git repo的代码行数：  git ls-files | xargs wc -l
 
 
 
@@ -29,6 +30,7 @@ learn c the hard way
 - [x] 函数指针: [解答](lcthw/函数指针.txt)
 - [x] OOP: [解答](lcthw/OOP.txt)
 - [x] debug marco: [解答](lcthw/debug.txt)
+- [x] extern vs static: [解答](lcthw/extern_and_static.txt)
 
 
 
@@ -97,6 +99,23 @@ Effective Objective-C:
 - [x] 将类的实现代码分散到便于管理的数个分类之中: [解答](EOC/EOC24.md)
 - [x] 总是为第三方类的分类名称加前缀: [解答](EOC/EOC25.md)
 - [x] 勿在分类中声明属性: [解答](EOC/EOC26.md)
-- [ ] 使用‘class-continuation分类’隐藏实现细节: [解答](EOC/EOC27.md)
-- [ ] 通过协议提供匿名对象
+- [x] 使用‘class-continuation分类’隐藏实现细节: [解答](EOC/EOC27.md)
+- [x] 通过协议提供匿名对象: [解答](EOC/EOC28.md)
 - [x] 理解引用计数: 上面thoughts部分 -> ARC内存管理 strong/weak/copy [补充](EOC/EOC29.md)
+- [x] 以ARC简化引用计数: [解答](EOC/EOC30.md)
+- [x] 在dealloc方法中之释放引用并解除监听
+- [x] 编写‘异常安全代码’时留意内存管理问题
+- [x] 以弱引用避免保留环
+- [x] 以‘自动释放池块’降低内存峰值
+- [x] 用‘僵尸对象’调试内存管理问题
+- [x] 不要使用retainCount
+- [x] 理解‘块’这一概念： 参见blocks: [解答](thoughts/blocks.md) [补充](EOC/EOC37.md)
+- [x] 为常用的块类型创建typedef: [解答](EOC/EOC38.md)
+- [ ] 用handler块降低代码分散程度
+
+
+
+
+
+
+
