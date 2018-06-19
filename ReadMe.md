@@ -14,7 +14,9 @@ skills make my life easier:
 - clang run oc files: `clang -fobjc-arc main.m XYZShootingPerson.m XYZPerson.m -o main`
 - Xcode快速添加documentation： command + option + /
 - Xcode fold/unfold function: command+ shift+ ←\→
+- 节约空间：  `~/Library/Developer/CoreSimulator/Devices` 可删
 - 快速知道一个git repo的代码行数：  git ls-files | xargs wc -l
+- 快速查文件夹代码行数： find . -name '*.*' -type f | xargs wc -l
 
 
 
@@ -31,6 +33,7 @@ learn c the hard way
 - [x] OOP: [解答](lcthw/OOP.txt)
 - [x] debug marco: [解答](lcthw/debug.txt)
 - [x] extern vs static: [解答](lcthw/extern_and_static.txt)
+- [x] I/O函数: [解答](lcthw/iofunction.txt)
 
 
 
@@ -52,7 +55,6 @@ learn c the hard way
 
  
 
-
 thoughts:
 
 - [x] 属性，实例变量以及synthesize: [解答](thoughts/属性.md)
@@ -68,6 +70,7 @@ thoughts:
 - [x] KVC & KVO: [解答](thoughts/KVC & KVO.md)
 - [x] [KVC & KVO on objio](https://objccn.io/issue-7-3/): [解答](thoughts/KVC & KVO2.md)
 - [x] Runtime: [解答](thoughts/Runtime.md)
+- [x] 内存泄露检测？
 
 
 
@@ -111,8 +114,9 @@ Effective Objective-C:
 - [x] 不要使用retainCount
 - [x] 理解‘块’这一概念： 参见blocks: [解答](thoughts/blocks.md) [补充](EOC/EOC37.md)
 - [x] 为常用的块类型创建typedef: [解答](EOC/EOC38.md)
-- [ ] 用handler块降低代码分散程度
-
+- [x] 用handler块降低代码分散程度: [解答](EOC/EOC39.md)
+- [x] 用块引用其所属对象是不要出现保留环: [解答](EOC/EOC40.md)
+- [ ] 多用派发队列，少用同步锁
 
 
 

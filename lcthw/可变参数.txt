@@ -1,0 +1,14 @@
+int read_scan(const char *fmt, ...){}
+
+...表示接受任何数量的参数
+需要 #include <stdarg.h>
+
+// 声明可变参数变量: 
+va_list argp;
+// 把可变参数拷贝进argp中？fmt是其之前的最后一个参数
+va_start(argp, fmt);
+
+// 这个函数的man page 如下:
+va_start(va_list ap, last);
+
+
