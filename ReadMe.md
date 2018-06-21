@@ -7,6 +7,8 @@
 - [ ] 函数式 Swift [代码笔记](objccn-functional-swift)
 - [ ] Objective-C高级编程 ： iOS与OS X多线程和内存管理
 - [x] Programming with Objective C : [中文版](https://github.com/L1l1thLY/Programming-with-Objective-C-in-Chinese)
+- [ ] Core Data by Tutorials: [Code](https://github.com/KrisYu/Core-Data-by-Tutorials)  [Notes](Core_Data_by_Tutorials)
+
 
 skills make my life easier:
 
@@ -53,6 +55,18 @@ learn c the hard way
 - [x] willSet 和 didSet 如何能初始化时被调用： [解答](thoughts/willset.md)
 - [x] Swift introspection: type(of: application) 也有 isMemberOf
 
+随手记Swift：
+
+
+读一个OC项目[Wechat](https://github.com/Seanwong933/WeChat)：
+
+- [x] 汉字转拼音：[解答](oc/pinyin.md)
+- [x] 画一个矩形的色块： [解答](oc/rectImage.md)
+- [x] dispatch_once实现单例模式： [解答](oc/singleton.md) 
+- [x] system coloring: [解答](oc/systemColoring.md)
+- [x] 手写UITableViewCell的套路: [解答](oc/tableViewCell.md)
+- [x] 搜索ViewController: [解答](oc/searchControllerUpdate.md)
+
  
 
 thoughts:
@@ -76,11 +90,11 @@ thoughts:
 
 Effective Objective-C:
 
-- [x] 'Calling a method' OR 'sending a message' in Objective C? : [解答](EOC/EOC1.md)
-- [x] forward declaring: [解答](EOC/EOC2.md)
-- [x] 字面量语法： [解答](EOC/EOC3.md)
-- [x] 常型常量: [解答](EOC/EOC4.md)
-- [x] 用枚举表示状态、选项、状态码： [解答](EOC/EOC5.md)
+- [x] 'Calling a method' OR 'sending a message' in Objective C? : [解答](EOC/EOC01.md)
+- [x] forward declaring: [解答](EOC/EOC02.md)
+- [x] 字面量语法： [解答](EOC/EOC03.md)
+- [x] 常型常量: [解答](EOC/EOC04.md)
+- [x] 用枚举表示状态、选项、状态码： [解答](EOC/EOC05.md)
 - [x] 理解“属性”这一概念 ： 参见上面的thoughts部分-> 属性以及ARC
 - [x] 在对象内部尽量直接访问实例变量: 直接访问实例变量不会触发 KVO
 - [x] 理解‘对象等同性’这一概念： 是指向同一对象 or 属性一样
@@ -116,8 +130,18 @@ Effective Objective-C:
 - [x] 为常用的块类型创建typedef: [解答](EOC/EOC38.md)
 - [x] 用handler块降低代码分散程度: [解答](EOC/EOC39.md)
 - [x] 用块引用其所属对象是不要出现保留环: [解答](EOC/EOC40.md)
-- [ ] 多用派发队列，少用同步锁
-
+- [x] 多用派发队列，少用同步锁
+- [x] 多用GCD，少用performSelector系列方法: [解答](EOC/EOC42.md)
+- [x] 掌握GCD几操作队列的使用时机: [解答](EOC/EOC43.md)
+- [x] 通过Dispatch Group机制，根据系统资源状况来执行任务: [解答](EOC/EOC44.md)
+- [x] 使用 dipatch_once 来执行只需运行一次的线程安全代码: 参见实现单例模式： [解答](oc/singleton.md) 
+- [x] 不要使用diapatch_get_current_queue
+- [x] 熟悉系统框架
+- [x] 多用块枚举，少用for循环: [解答](EOC/EOC48.md)
+- [x] 对自定义其内存管理语义的 collection 使用无缝桥接: [解答](EOC/EOC49.md)
+- [x] 构建缓存时选用 NSCache 而非 NSDictionary: [解答](EOC/EOC50.md)
+- [x] 精简 initialize 与 load的实现代码
+- [x] 别忘了NSTimer会保留其目标对象
 
 
 
