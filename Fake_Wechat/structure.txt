@@ -1,0 +1,10 @@
+App的结构作者已经分的很好。
+
+入口是MainTabBarController， 四个tab，分别是 聊天， 联系人， 发现， 我。
+AppDelegate.m 中启动完毕我们就直接进了 Main 界面。
+
+- BaseViewController特别简单，就只是做了更改 preferredStatusBarStyle 这个操作，preferredStatusBarStyle 设定为 UIStatusBarStyleLightContent。
+  UIStatusBarStyleLightContent - A light status bar, intended for use on dark backgrounds.
+
+- ContactsViewController 继承自 BaseViewController， 结构也比较简单。
+  YSMChineseSort 来实现根据拼音 sort 通讯录，调用之中的函数产生 groupedContacts 和 headers.

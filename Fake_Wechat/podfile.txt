@@ -1,0 +1,5 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'Fake-Wechat' do
+  pod 'YSMChineseSort','~>0.1.0'
+end

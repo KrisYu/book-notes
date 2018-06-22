@@ -1,11 +1,12 @@
   iOS - Roadtrip
-  
-  
+
+
   books
 
 - [x] iOS编程（第4版）: [Exerice Projects](https://github.com/KrisYu/iOS-Programming-The-Big-Nerd-Ranch-Guide)
 - [ ] 函数式 Swift [代码笔记](objccn-functional-swift)
 - [ ] Objective-C高级编程 ： iOS与OS X多线程和内存管理
+- [x] Effective Objective-C 2.0
 - [x] Programming with Objective C : [中文版](https://github.com/L1l1thLY/Programming-with-Objective-C-in-Chinese)
 - [ ] Core Data by Tutorials: [Code](https://github.com/KrisYu/Core-Data-by-Tutorials)  [Notes](Core_Data_by_Tutorials)
 
@@ -19,6 +20,13 @@ skills make my life easier:
 - 节约空间：  `~/Library/Developer/CoreSimulator/Devices` 可删
 - 快速知道一个git repo的代码行数：  git ls-files | xargs wc -l
 - 快速查文件夹代码行数： find . -name '*.*' -type f | xargs wc -l
+
+
+随手记
+
+- shell文件后缀 .sh, 如果要run它  sh file.sh
+- vim 翻页： 整页翻页 ctrl-f ctrl-b
+- vim 行数： ：set number
 
 
 
@@ -48,9 +56,9 @@ learn c the hard way
 - [x] tag: tag可以link with view，有时候可以通过tag来target-action链接
 - [x] bounds.width vs bounds.size.width: return一样的东西，但是bounds.width 是 get only
 - [x] x? = x! + 1 这种写法是完全安全的，如果左侧被展开了，那么右侧一定就是non-optional
-- [x] swift函数签名: 
+- [x] swift函数签名:
 - [x] view hierarchy:
-- [x] addSubview vs insertSubview(_:aboveSubview:) ...
+- [x] addSubview vs insertSubview(_aboveSubview:)
 - [x] print pointer address for class: `String(describing: Unmanaged.passUnretained(self).toOpaque())`
 - [x] willSet 和 didSet 如何能初始化时被调用： [解答](thoughts/willset.md)
 - [x] Swift introspection: type(of: application) 也有 isMemberOf
@@ -60,14 +68,16 @@ learn c the hard way
 
 读一个OC项目[Wechat](https://github.com/Seanwong933/WeChat)：
 
-- [x] 汉字转拼音：[解答](oc/pinyin.md)
-- [x] 画一个矩形的色块： [解答](oc/rectImage.md)
-- [x] dispatch_once实现单例模式： [解答](oc/singleton.md) 
-- [x] system coloring: [解答](oc/systemColoring.md)
-- [x] 手写UITableViewCell的套路: [解答](oc/tableViewCell.md)
-- [x] 搜索ViewController: [解答](oc/searchControllerUpdate.md)
 
- 
+- [x] pod file 格式：[解答](Fake_Wechat/podfile.txt)
+- [x] 汉字转拼音：[解答](Fake_Wechat/pinyin.md)
+- [x] 画一个矩形的色块： [解答](Fake_Wechat/rectImage.md)
+- [x] dispatch_once实现单例模式： [解答](Fake_Wechat/singleton.md)
+- [x] system coloring: [解答](Fake_Wechat/systemColoring.md)
+- [x] 手写UITableViewCell的套路: [解答](Fake_Wechat/ContactsTableViewCell.md)
+- [x] 搜索ViewController: [解答](Fake_Wechat/searchControllerUpdate.md)
+
+
 
 thoughts:
 
@@ -134,7 +144,7 @@ Effective Objective-C:
 - [x] 多用GCD，少用performSelector系列方法: [解答](EOC/EOC42.md)
 - [x] 掌握GCD几操作队列的使用时机: [解答](EOC/EOC43.md)
 - [x] 通过Dispatch Group机制，根据系统资源状况来执行任务: [解答](EOC/EOC44.md)
-- [x] 使用 dipatch_once 来执行只需运行一次的线程安全代码: 参见实现单例模式： [解答](oc/singleton.md) 
+- [x] 使用 dipatch_once 来执行只需运行一次的线程安全代码: 参见实现单例模式： [解答](oc/singleton.md)
 - [x] 不要使用diapatch_get_current_queue
 - [x] 熟悉系统框架
 - [x] 多用块枚举，少用for循环: [解答](EOC/EOC48.md)
@@ -142,8 +152,3 @@ Effective Objective-C:
 - [x] 构建缓存时选用 NSCache 而非 NSDictionary: [解答](EOC/EOC50.md)
 - [x] 精简 initialize 与 load的实现代码
 - [x] 别忘了NSTimer会保留其目标对象
-
-
-
-
-
