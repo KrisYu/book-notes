@@ -1,4 +1,4 @@
-```
+
 - (void)updateSearchResultsForSearchController:
   (UISearchController*)searchController
 {
@@ -11,11 +11,11 @@
 
       NSString* pinyin =
         [NSString stringWithFormat:@"%@", [keyword transformToPinyin]];
-        
-      // 生成predictate       
+
+      // 生成predictate
       NSPredicate* predicate =
         [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", searchString];
-      
+
       // 如果 pinyin 和 keyword 都不包含 predicate，那么continue， 否则我们把index加入
       if (![predicate evaluateWithObject:pinyin] &&
           ![predicate evaluateWithObject:keyword])
@@ -27,9 +27,8 @@
 
   [self.tableView reloadData];
 }
-```
+
 
 记得用过UISearchController，但是好像需要补充几波：
 
 [UISearchController Tutorial: Getting Started](https://www.raywenderlich.com/157864/uisearchcontroller-tutorial-getting-started)
-

@@ -70,13 +70,14 @@ learn c the hard way
 
 
 - [x] pod file 格式：[解答](Fake_Wechat/podfile.txt)
-- [x] 汉字转拼音：[解答](Fake_Wechat/pinyin.md)
-- [x] 画一个矩形的色块： [解答](Fake_Wechat/rectImage.md)
-- [x] dispatch_once实现单例模式： [解答](Fake_Wechat/singleton.md)
-- [x] system coloring: [解答](Fake_Wechat/systemColoring.md)
-- [x] 手写UITableViewCell的套路: [解答](Fake_Wechat/ContactsTableViewCell.md)
-- [x] 搜索ViewController: [解答](Fake_Wechat/searchControllerUpdate.md)
-
+- [x] 汉字转拼音：[解答](Fake_Wechat/pinyin.txt)
+- [x] 画一个矩形的色块： [解答](Fake_Wechat/rectImage.txt)
+- [x] dispatch_once实现单例模式： [解答](Fake_Wechat/singleton.txt)
+- [x] tab bar highlight展示不同的图片: [解答](Fake_Wechat/TabbarHighlight.text)
+- [x] 手写UITableView: [解答](Fake_Wechat/ContactsTableView.txt)
+- [x] 不一样的 UITableViewCell设定方式: [解答](Fake_Wechat/ContactsTableViewCell.txt)
+- [x] 介绍UISearchController: [解答](Fake_Wechat/介绍UISearchController.md)
+- [x] App结构: [解答](Fake_Wechat/structure.txt)
 
 
 thoughts:

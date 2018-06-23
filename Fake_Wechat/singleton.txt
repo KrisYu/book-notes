@@ -1,7 +1,7 @@
 
 这么做：
 
-```
+
 @implementation XXClass
 
 + (id)sharedInstance {
@@ -12,12 +12,12 @@
     });
     return sharedInstance;
 }
-```
+
 
 App中例子：
 
 
-```
+
 + (UIColor*)wechatFontColor
 {
 	static UIColor* color = nil;
@@ -29,25 +29,22 @@ App中例子：
 	  });
 	return color;
 }
-```
 
 
-**Swift中我们则是这样做**：
 
-```
+Swift中我们则是这样做：
+
 class MyManager  {
     static let sharedInstance = MyManager()
     private init() {}
 }
-```
 
 使用的时候这么用:
 
-```
+
 let instance = MyClass.shared
 
 // iOS 开发中常用的单例
 UIApplication.shared
 NSNotification.shared
 NSUserDefaults.shared
-```

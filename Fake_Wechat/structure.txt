@@ -8,3 +8,7 @@ AppDelegate.m 中启动完毕我们就直接进了 Main 界面。
 
 - ContactsViewController 继承自 BaseViewController， 结构也比较简单。
   YSMChineseSort 来实现根据拼音 sort 通讯录，调用之中的函数产生 groupedContacts 和 headers.
+  配合SearchResultsController实现搜索效果。
+
+- ChatViewController 也跟别的没有太大区别。
+  Chat部分的难点是在于ChatRoomVC的实现。
