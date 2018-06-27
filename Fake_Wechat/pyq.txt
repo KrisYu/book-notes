@@ -1,0 +1,238 @@
+朋友圈界面也是tableview， 由 MomentsTableViewController 来展现。
+
+#import "CoverHeaderView.h"
+#import "MJRefreshAutoNormalFooter.h"
+#import "Masonry.h"
+#import "Moment.h"
+#import "MomentTableViewCell.h"
+#import "MomentsDataSource.h"
+#import "MomentsTableViewController.h"
+#import "UITableView+SDAutoTableViewCellHeight.h"
+#import "SpinningLoadingView.h"
+#import "UIImage+RandomImage.h"
+
+static NSString* const kIdentifier = @"Identifier";
+static NSUInteger const kCoverViewHeight = 450;
+
+@interface MomentsTableViewController ()
+
+@property (strong, nonatomic) CoverHeaderView* coverView;
+@property (assign, nonatomic) float contentInsetY;
+
+@property (strong, nonatomic) MomentsDataSource* datasource;
+@property (strong, nonatomic) NSMutableArray<Moment*>* momentsArray;
+
+@end
+
+@implementation MomentsTableViewController
+
+-(void)dealloc{
+  NSLog(@"MomentsTableViewController dealloced");
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+  [super viewDidDisappear:animated];
+
+  self.datasource = nil;
+  self.momentsArray = nil;
+
+  [self.tableView removeFromSuperview];
+  self.tableView = nil;
+
+  NSLog(@"moments disappear");
+}
+
+#pragma mark - accessors
+// init _momentsArray
+-(NSMutableArray<Moment *> *)momentsArray{
+  if (_momentsArray == nil) {
+    _momentsArray = [NSMutableArray array];
+  }
+  return _momentsArray;
+}
+
+// init dataSource: the MomentsDataSource will load some data in.
+-(MomentsDataSource *)datasource{
+  static MomentsDataSource* dataSource = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    dataSource = [[MomentsDataSource alloc] init];
+  });
+
+  return dataSource;
+}
+
+
+/*
+ Mark:
+ tableView似乎只认tableHeaderView的frame，不认约束，所以要在这里用systemLayoutSizeFittingSize算出约束高度后再重新赋值给tableHeaderView
+ */
+
+-(void)viewDidLayoutSubviews{
+  [super viewDidLayoutSubviews];
+
+  CoverHeaderView* headerView = (CoverHeaderView*)self.tableView.tableHeaderView;
+
+  CGFloat height = [headerView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+  CGRect frame = headerView.frame;
+  frame.size.height = height;
+  headerView.frame = frame;
+
+  可以把上面四句替换成也对 → headerView.frame = CGRectMake(0, 0, self.view.bounds.size.width, kCoverViewHeight);
+
+
+  self.tableView.tableHeaderView = headerView;
+}
+
+
+-(void)viewDidLoad{
+  [super viewDidLoad];
+
+  // 这样我们把tableview放在上面-150处，这样我们可以下拉刷新
+  self.contentInsetY = -150;
+
+  [self buildTableview];
+  [self loadData: true];
+  [self bindConstraints];
+}
+
+
+-(void)buildTableview{
+  [self.tableView registerClass:[MomentTableViewCell class] forCellReuseIdentifier:kIdentifier];
+  self.tableView.contentInset = UIEdgeInsetsMake(self.contentInsetY, 0, 0, 0);
+  self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
+
+  self.coverView = [CoverHeaderView coverHeaderWithCover:[UIImage imageNamed:@"cover"]
+                                                   avatar:[UIImage imageNamed:@"siegrain_avatar"]
+                                                     name:@"Siegrain Wong"];
+  self.tableView.tableHeaderView = self.coverView;
+
+  // 我们创建了一个下拉刷新控件
+  SpinningLoadingView* loadingView = [SpinningLoadingView headerWithRefreshingBlock:^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),dispatch_get_main_queue(), ^{
+      [self loadData: true];
+      [self.tableView.mj_header endRefreshing];
+    });
+  }];
+  loadingView.ignoredScrollViewContentInsetTop = self.contentInsetY;
+  self.tableView.mj_header = loadingView;
+
+  // 上拉刷新控件
+  self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      [self loadData: false];
+      [self.tableView.mj_footer endRefreshing];
+    });
+  }];
+
+
+}
+
+// 控制CoverHeader，让它保持我们想要的效果
+-(void)bindConstraints{
+  [self.coverView mas_makeConstraints:^(MASConstraintMaker *make) {
+    make.right.left.top.offset(0);
+    make.width.equalTo(self.view);
+    make.height.offset(kCoverViewHeight);
+    make.bottom.offset(-10);
+  }];
+}
+
+
+
+-(void)loadData: (BOOL) isInitial{
+  // 如果isInitial为true，那么 self.momentsArray 变空 ，然后再重新加入数据，对应下拉，如果下拉，我们数据变空，重新生成datasource
+  // 如果isInitial为false，那么 self.momentsArray 不会变空，我们会不断填数据进去，这样可以形成数据一直出现的效果。
+  if (isInitial) [self.momentsArray removeAllObjects];
+
+  NSArray* data = [self.datasource moments];
+  [self.momentsArray addObjectsFromArray:data];
+
+  [self.tableView reloadData];
+  [self.tableView bringSubviewToFront:self.tableView.mj_header];
+}
+
+
+
+#pragma mark - Table view data source
+// 预估高度
+-(CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath{
+  return [self tableView:tableView heightForRowAtIndexPath:indexPath];
+}
+
+// 计算高度
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+  // Moment对象
+  Moment* model = self.momentsArray[indexPath.row];
+
+  // 这个是Moment对象，包含属性高度
+  // init的时候只有 content, name, pictures, comments
+  // 但是具有height这个属性，它是算出来的
+  if (!model.height) {
+    // 这个方法来自于UITableView+SDAutoTableViewCellHeight.h
+    // 返回计算出的cell高度（普通简化版方法，同样只需一步设置即可完成）(用法：单cell详见demo5，多cell详见demo7) model : cell的数据模型实例 keyPath : cell的数据模型属性的属性名字符串（即kvc原理中的key） cellClass : 当前的indexPath对应的cell的class contentViewWidth : cell的contentView的宽度
+    model.height = [self.tableView cellHeightForIndexPath:indexPath
+                                                    model:model
+                                                  keyPath:@"model"
+                                                cellClass:[MomentTableViewCell class]
+                                         contentViewWidth:[self cellContentViewWidth]];
+  }
+  return model.height;
+}
+
+// momentsArray，就是下拉的时候一直往里面添加
+// 上拉的时候刷新一下
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.momentsArray.count;
+}
+
+// 配置cell
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+  MomentTableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:kIdentifier forIndexPath:indexPath];
+
+  [self configureCell: cell atIndexPath: indexPath];
+
+  return cell;
+}
+
+
+-(void)configureCell:(MomentTableViewCell*)cell atIndexPath:(NSIndexPath*) indexPath {
+  Moment* model = self.momentsArray[indexPath.row];
+
+  // 给朋友圈 moments 配上 avatar
+  if (!model.avatar)
+    model.avatar = [UIImage randomImageInPath:@"Images/cell_icons"];
+  model.indexPath = indexPath;
+
+  // 以下方法来自于 MomentTableViewCell
+  // 我们用它来做打开/收起？
+  if (!cell.toggleTextExpand) {
+    __weak typeof(self) weakSelf = self;
+    [cell setToggleTextExpand:^(NSIndexPath *indexPath) {
+      Moment* model = weakSelf.momentsArray[indexPath.row];
+      model.isContentExpaned = !model.isContentExpaned;
+
+      model.height = 0;
+
+      [UIView setAnimationsEnabled:false];
+      [weakSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+      [UIView setAnimationsEnabled:true];
+    }];
+
+  }
+  [cell setModel:model];
+}
+
+
+-(CGFloat)cellContentViewWidth{
+  CGFloat width = [UIScreen mainScreen].bounds.size.width;
+
+  // 如果屏幕是横屏并且系统版本小于8.0?什么鬼
+  // https://stackoverflow.com/a/25923073/3608824
+  if ([UIApplication sharedApplication].statusBarOrientation != UIInterfaceOrientationPortrait && [[UIDevice currentDevice].systemVersion floatValue] < 8) {
+    width = [UIScreen mainScreen].bounds.size.height;
+  }
+  return width;
+}
+
+@end

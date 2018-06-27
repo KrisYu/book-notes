@@ -12,3 +12,8 @@ AppDelegate.m 中启动完毕我们就直接进了 Main 界面。
 
 - ChatViewController 也跟别的没有太大区别。
   Chat部分的难点是在于ChatRoomVC的实现。
+
+- MeViewController 比较简单，用grouped style的 tableview展示‘我’的设置界面。
+
+- 发现界面: 发现界面也算简单，依旧是grouped style的tableview，难点在于朋友圈的实现。
+  朋友圈界面包含很多元素： 内容/评论，点开查看评论，发朋友圈的时间，点击查看大图，保存, etc...
