@@ -1,4 +1,6 @@
 朋友圈界面也是tableview， 由 MomentsTableViewController 来展现。
+朋友圈会很复杂，因为包含内容/评论，点开查看评论，发朋友圈的时间，点击查看大图，保存, etc...
+
 
 #import "CoverHeaderView.h"
 #import "MJRefreshAutoNormalFooter.h"
