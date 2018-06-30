@@ -5,11 +5,8 @@
 
 - [x] iOS编程（第4版）: [Exerice Projects](https://github.com/KrisYu/iOS-Programming-The-Big-Nerd-Ranch-Guide)
 - [ ] 函数式 Swift [代码笔记](objccn-functional-swift)
-
 - [x] Programming with Objective C : [中文版](https://github.com/L1l1thLY/Programming-with-Objective-C-in-Chinese)
 - [ ] Core Data by Tutorials: [Code](https://github.com/KrisYu/Core-Data-by-Tutorials)  [Notes](Core_Data_by_Tutorials)
-
-
 - [x] Objective-C高级编程 ： iOS与OS X多线程和内存管理
 - [x] Effective Objective-C 2.0 : [笔记](EOCNotes.md)
 - [ ] 大话设计模式: [笔记](Design_Pattern_notes.md)  [Design-Pattern-For-iOS](https://github.com/huang303513/Design-Pattern-For-iOS) [Swift-X-Design-Patterns](https://github.com/kingcos/Swift-X-Design-Patterns)
@@ -66,6 +63,8 @@ learn c the hard way
 - [x] willSet 和 didSet 如何能初始化时被调用： [解答](thoughts/willset.md)
 - [x] Swift introspection: type(of: application) 也有 isMemberOf
 - [x] C语言中函数名加 __ 前缀一般是留给系统函数用的
+- [x] 打印结构体: NSStringFromCGSize...
+- [x] 打印函数:   NSLog(@"%@", NSStringFromSelector(_cmd));
 
 随手记Swift：
 
@@ -101,3 +100,4 @@ thoughts:
 - [x] [KVC & KVO on objio](https://objccn.io/issue-7-3/): [解答](thoughts/KVC & KVO2.md)
 - [x] Runtime: [解答](thoughts/Runtime.md)
 - [x] 内存泄露检测？
+- [x] UIScrollView: [解答](thoughts/UIScrollView.md)
