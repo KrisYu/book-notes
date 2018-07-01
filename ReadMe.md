@@ -22,6 +22,7 @@ skills make my life easier:
 - 快速查文件夹代码行数： find . -name '*.*' -type f | xargs wc -l
 
 
+
 随手记
 
 - shell文件后缀 .sh, 如果要run它  sh file.sh
@@ -66,6 +67,7 @@ learn c the hard way
 - [x] 打印结构体: NSStringFromCGSize...
 - [x] 打印函数:   NSLog(@"%@", NSStringFromSelector(_cmd));
 
+
 随手记Swift：
 
 
@@ -82,7 +84,7 @@ learn c the hard way
 - [x] 介绍UISearchController: [解答](Fake_Wechat/介绍UISearchController.md)
 - [x] App结构: [解答](Fake_Wechat/structure.txt)
 - [x] 朋友圈: [解答](Fake_Wechat/pyq.txt)
-
+- [x] NSMa
 
 thoughts:
 
