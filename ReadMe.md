@@ -10,6 +10,7 @@
 - [x] Objective-C高级编程 ： iOS与OS X多线程和内存管理
 - [x] Effective Objective-C 2.0 : [笔记](EOCNotes.md)
 - [ ] 大话设计模式: [笔记](Design_Pattern_notes.md)  [Design-Pattern-For-iOS](https://github.com/huang303513/Design-Pattern-For-iOS) [Swift-X-Design-Patterns](https://github.com/kingcos/Swift-X-Design-Patterns)
+- [ ] 大话数据结构
 
 skills make my life easier:
 
