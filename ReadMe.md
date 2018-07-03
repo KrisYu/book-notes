@@ -10,7 +10,7 @@
 - [x] Objective-C高级编程 ： iOS与OS X多线程和内存管理
 - [x] Effective Objective-C 2.0 : [笔记](EOCNotes.md)
 - [ ] 大话设计模式: [笔记](Design_Pattern_notes.md)  [Design-Pattern-For-iOS](https://github.com/huang303513/Design-Pattern-For-iOS) [Swift-X-Design-Patterns](https://github.com/kingcos/Swift-X-Design-Patterns)
-- [ ] 大话数据结构
+
 
 skills make my life easier:
 
@@ -46,8 +46,6 @@ learn c the hard way
 - [x] debug marco: [解答](lcthw/debug.txt)
 - [x] extern vs static: [解答](lcthw/extern_and_static.txt)
 - [x] I/O函数: [解答](lcthw/iofunction.txt)
-
-
 
 
 
@@ -104,3 +102,12 @@ thoughts:
 - [x] Runtime: [解答](thoughts/Runtime.md)
 - [x] 内存泄露检测？
 - [x] UIScrollView: [解答](thoughts/UIScrollView.md)
+
+大话数据结构: 
+
+- [x] 结构体和指针: [解答](data_structure/structPointer.txt)
+- [x] 线性表的array实现: [解答](data_structure/list1.c)
+- [x] 线性表的linklist实现: [解答](data_structure/list2.c)
+- [x] 静态链表: [解答](data_structure/list3.c)
+- [x] 单循环链表: [解答](data_structure/circular_linked_list.txt)
+- [x] 双向链表: [解答](data_structure/double_linked_list.txt)

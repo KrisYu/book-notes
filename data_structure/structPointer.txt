@@ -1,0 +1,343 @@
+先来看第一个程序：
+
+
+#include <stdio.h>
+#include <string.h>
+
+struct student{
+  int id;
+  char name[20];
+  float percentage;
+};
+
+void func(struct student record);
+
+int main(){
+  struct student record;
+
+  record.id=1;
+  strcpy(record.name, "Raju");
+  record.percentage = 86.5;
+
+  func(record);
+  return 0;
+}
+
+void func(struct student record){
+  printf(" Id is: %d \n", record.id);
+  printf(" Name is: %s \n", record.name);
+  printf(" Percentage is: %f \n", record.percentage);
+}
+
+
+简单输出：
+Id is: 1 
+Name is: Raju 
+Percentage is: 86.500000 
+
+
+更改程序如下：
+
+#include <stdio.h>
+#include <string.h>
+
+struct student{
+  int id;
+  char name[20];
+  float percentage;
+};
+
+void display(struct student record);
+void changeStudent(struct student record);
+
+int main(){
+  struct student record;
+
+  record.id=1;
+  strcpy(record.name, "Raju");
+  record.percentage = 86.5;
+
+  display(record);
+  changeStudent(record);
+  display(record);
+  return 0;
+}
+
+void display(struct student record){
+  printf(" Id is: %d \n", record.id);
+  printf(" Name is: %s \n", record.name);
+  printf(" Percentage is: %f \n", record.percentage);
+}
+
+void changeStudent(struct student record){
+  record.id = 2;
+  strcpy(record.name, "Kris");
+  record.percentage = 90.0;
+}
+
+输出：
+
+Id is: 1 
+Name is: Raju 
+Percentage is: 86.500000 
+Id is: 1 
+Name is: Raju 
+Percentage is: 86.500000 
+
+并没有达到更改record。
+
+第三个程序：
+
+#include <stdio.h>
+#include <string.h>
+
+struct student{
+  int id;
+  char name[20];
+  float percentage;
+};
+
+void display(struct student record);
+void changeStudent(struct student record);
+
+int main(){
+  struct student record;
+
+  record.id=1;
+  strcpy(record.name, "Raju");
+  record.percentage = 86.5;
+
+  display(record);
+  changeStudent(record);
+  display(record);
+  return 0;
+}
+
+void display(struct student record){
+  printf(" Id is: %d \n", record.id);
+  printf(" Name is: %s \n", record.name);
+  printf(" Percentage is: %f \n", record.percentage);
+}
+
+void changeStudent(struct student record){
+  record.id = 2;
+  strcpy(record.name, "Kris");
+  record.percentage = 90.0;
+  display(record);
+}
+
+输出：
+
+Id is: 1 
+Name is: Raju 
+Percentage is: 86.500000 
+Id is: 2 
+Name is: Kris 
+Percentage is: 90.000000 
+Id is: 1 
+Name is: Raju 
+Percentage is: 86.500000 
+
+只有局部变量被改变了。
+一旦changeStudent，record依旧。
+
+
+第四个程序，引入指针：
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+typedef struct student{
+  int id;
+  char name[20];
+  float percentage;
+}student;
+typedef student* studentPt;
+
+void display(student record);
+
+int main(){
+  studentPt recordPt;
+
+  recordPt = malloc(sizeof(student));
+  (*recordPt).id=1;
+  strcpy((*recordPt).name, "Raju");
+  (*recordPt).percentage = 86.5;
+
+  display(*recordPt);
+  return 0;
+}
+
+void display(student record){
+  printf(" Id is: %d \n", record.id);
+  printf(" Name is: %s \n", record.name);
+  printf(" Percentage is: %f \n", record.percentage);
+}
+
+
+输出：
+
+Id is: 1 
+Name is: Raju 
+Percentage is: 86.500000 
+
+第五个程序，当然我们也可以写成这样： (*record).id 写成 record->id:
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+typedef struct student{
+  int id;
+  char name[20];
+  float percentage;
+}student;
+typedef student* studentPt;
+
+void display(student record);
+
+int main(){
+  studentPt recordPt;
+
+  recordPt = malloc(sizeof(student));
+  recordPt->id = 1;
+  strcpy(recordPt->name, "Raju");
+  recordPt->percentage = 86.5;
+
+  display(*recordPt);
+  return 0;
+}
+
+void display(student record){
+  printf(" Id is: %d \n", record.id);
+  printf(" Name is: %s \n", record.name);
+  printf(" Percentage is: %f \n", record.percentage);
+}
+
+输出依旧：
+
+Id is: 1 
+Name is: Raju 
+Percentage is: 86.500000 
+
+第六个程序，我们尝试通过指针来更改程序：
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+typedef struct student{
+  int id;
+  char name[20];
+  float percentage;
+}student;
+typedef student* studentPt;
+
+void display(student record);
+void changeStudent(studentPt recordPt);
+
+int main(){
+  studentPt recordPt;
+
+  recordPt = malloc(sizeof(student));
+  recordPt->id = 1;
+  strcpy(recordPt->name, "Raju");
+  recordPt->percentage = 86.5;
+
+  display(*recordPt);
+  changeStudent(recordPt);
+  display(*recordPt);
+  return 0;
+}
+
+void display(student record){
+  printf(" Id is: %d \n", record.id);
+  printf(" Name is: %s \n", record.name);
+  printf(" Percentage is: %f \n", record.percentage);
+}
+
+
+void changeStudent(studentPt recordPt) {
+  recordPt->id = 2;
+  strcpy(recordPt->name, "Kris");
+  recordPt->percentage = 90.0;
+  display(*recordPt);
+}
+
+输出：
+
+Id is: 1 
+Name is: Raju 
+Percentage is: 86.500000 
+Id is: 2 
+Name is: Kris 
+Percentage is: 90.000000 
+Id is: 2 
+Name is: Kris 
+Percentage is: 90.000000 
+
+意思是经过我们使用函数changeStudent之后指向的内存已经被修改，也只有指针能做到这一点。
+再看一点错误的例子：
+
+如果我们不适用malloc语句的话：
+
+studentPt recordPt;
+
+recordPt->id = 1;
+strcpy(recordPt->name, "Raju");
+recordPt->percentage = 86.5;
+
+那么会报错uninitialized.
+如果我们把这句变成：
+
+studentPt recordPt = NULL;
+
+之后会得到 Segmentation fault: 11。
+
+
+归根接底，我们是在stack上声明了一个pointer，这个pointer指向student这个struct，但是我们需要給它地址，给它找真正存储这个变量的空间。
+
+
+看这个SO问题： Declaring a Linked List Node
+
+https://stackoverflow.com/questions/31424451/declaring-a-linked-list-node
+
+作者提问：
+
+struct node {
+ int data ;            //data
+ struct node* next;    //pointer
+}
+
+为什么定义
+
+struct node* new_node = NULL;
+
+or
+
+struct node* new_node= (struct node*)malloc(sizeof(struct node)); 
+
+但不是： struct node new_node = NULL
+
+
+有几个解答：
+
+In the first two you declare pointers to a struct or node:
+
+struct node* new_node; is a pointer, or the adress of a struct
+
+And in your suggestion you declare a whole struct or node:
+
+struct node new_node; this is a struct that will live in the stack.
+
+and you can not assign null to a struct, at least in this case.
+
+当然我们也可以这样定义： 
+
+struct node new_node = {5 , NULL}; will create a node called new_node with data set to 5 and next set to NULL.
+
+这样就可以定义在stack上 new_node,但是我们使用 node， 使用linklist就是想随意分配。
+所以这样的struct不常见。
+
+

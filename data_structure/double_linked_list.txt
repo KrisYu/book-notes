@@ -1,0 +1,29 @@
+typedef struct DulNode{
+  ElementType data;
+  struct DulNode *prior; /*直接前驱指针*/
+  struct DulNode *next; /*直接后继指针*/
+} DulNode, *DuLinkList;
+
+
+双向链表可以是循环表。
+
+双向链表的循环带头结点的空链表：
+
+
+        _____
+        ↓    |
+-----> [ |  | ]
+头指针   |    ↑
+        -----
+
+插入s到p之后：
+s->prior = p;
+s->next = p->next;
+p->next->prior = s;
+p->next = s;
+
+
+删除结点p：
+p->prior->next = p->next;
+p->next->prior = p->prior;
+free(p);
