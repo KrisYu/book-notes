@@ -10,6 +10,7 @@
 - [x] Objective-C高级编程 ： iOS与OS X多线程和内存管理
 - [x] Effective Objective-C 2.0 : [笔记](EOCNotes.md)
 - [ ] 大话设计模式: [笔记](Design_Pattern_notes.md)  [Design-Pattern-For-iOS](https://github.com/huang303513/Design-Pattern-For-iOS) [Swift-X-Design-Patterns](https://github.com/kingcos/Swift-X-Design-Patterns)
+- [ ] 各类文档：http://idup.club/library
 
 
 skills make my life easier:
@@ -111,3 +112,10 @@ thoughts:
 - [x] 静态链表: [解答](data_structure/list3.c)
 - [x] 单循环链表: [解答](data_structure/circular_linked_list.txt)
 - [x] 双向链表: [解答](data_structure/double_linked_list.txt)
+- [x] 表实现栈: [解答](data_structure/stack1.c)
+- [x] 两栈共享空间: [解答](data_structure/stack2.c)
+- [x] 链栈: [解答](data_structure/stack3.c)
+- [x] 递归: [解答](data_structure/fib.c)
+- [x] 后缀表达式: [解答](data_structure/rpn.txt)
+- [x] 循环队列: [解答](data_structure/queue1.c)
+- [x] 链队列: [解答](data_structure/queue2.c)
