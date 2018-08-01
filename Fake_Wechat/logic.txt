@@ -1,0 +1,107 @@
+- SDWaitingView : 用来展示当等待的时候下载的百分比。
+
+- SDBrowserImageView： 用来展示图片，我们所看到的。可以实现双击缩放的效果。
+  
+  @property (nonatomic, assign) CGFloat progress;
+  @property (nonatomic, assign, readonly) BOOL isScaled;
+  @property (nonatomic, assign) BOOL hasLoadedImage;
+
+  -(void)eliminateScale;
+
+  -(void)setImageWithURL:(NSURL*)url placeholderImage:(UIImage*) placeholder;
+
+  -(void)doubleTapToZoomWithScale:(CGFloat)scale;
+
+  -(void)clear;
+  
+  这是对外的属性/方法。
+  
+  
+  对内包括：
+  @implementation SDBrowserImageView {
+    __weak SDWaitingView* _waitingView;
+    UIScrollView* _scroll;
+    UIImageView* _scrollImageView;
+    UIScrollView* _zoomingScrollView;
+    UIImageView* _zoomingImageView;
+    CGFloat _totalScale;
+  }
+  
+  可以看到我们专门用一个weak来hold _waitingView，这是当这个_waitingView被remove from subview之后，它会自动变成nil.（是不是其实也可以不用weak，因为我们总是要移走的，并且_waitingView又没有reference SDBrowserImageView，存疑？）
+  还有一个不明白的地方为什么要这么多 scrollView 和 imageView，因为除了缩放以外，其实我们可以不用scrollView（存疑？）
+  感觉第一个_scroll并没有起到太大的scroll作用，更多的是来帮助设置_zoomingImageView的size？
+  
+  
+- SDPhotoBrowser
+
+  对外
+  
+  @protocol SDPhotoBrowserDelegate <NSObject>
+
+  @required
+
+  -(UIImage*)photoBrowser: (SDPhotoBrowser *)browser placeholderImageForIndex: (NSInteger)index;
+
+  @optional
+
+  -(NSURL*)photoBrowser:(SDPhotoBrowser *)browser highQualityImageURLForIndex:(NSInteger)index;
+
+  @end
+  
+  @interface SDPhotoBrowser : UIView <UIScrollViewDelegate>
+
+  @property (nonatomic, weak) UIView* sourceImagesContainerView;
+  @property (nonatomic, assign) NSInteger currentImageIndex;
+  @property (nonatomic, assign) NSInteger imageCount;
+
+  @property (nonatomic, weak) id<SDPhotoBrowserDelegate> delegate;
+
+  - (void)show;
+  @end
+  
+  对内：
+  
+  @implementation SDPhotoBrowser{
+    UIScrollView* _scrollView;
+    BOOL _hasShowedFirstView;
+  
+    // 照片序标
+    UILabel* _indexLabel;
+  
+    // 保存按钮
+    UIButton* _saveButton;
+    UIActivityIndicatorView* _indicatorView;
+    BOOL _willDisappear;
+  }
+  
+  
+  
+- PhotoCollectionViewCell
+  
+  对外： @property (strong, nonatomic) UIImageView* imageView;
+
+- PhotosCollectionViewController
+
+  对外
+
+  static NSUInteger const kPhotoSize = 90;
+  static NSUInteger const kPhotoSizeSingle = 150;
+  static NSUInteger const kCellSpacing = 5;
+
+  @interface PhotosCollectionViewController : UICollectionViewController
+
+  @property (copy, nonatomic) NSArray<UIImage*>* photosArray;
+
+  @property (assign, nonatomic) BOOL calcualtedSize;
+
+  @end
+  
+  对内：
+  
+  @interface PhotosCollectionViewController () <SDPhotoBrowserDelegate>
+
+  @end
+  
+  利用SDPhotoBrowser的show来实现改变。
+  
+  

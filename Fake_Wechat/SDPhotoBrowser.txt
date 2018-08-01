@@ -1,0 +1,459 @@
+// SDPhotoBrowser.h
+#import <UIKit/UIKit.h>
+
+@class SDButton, SDPhotoBrowser;
+
+@protocol SDPhotoBrowserDelegate <NSObject>
+
+@required
+
+-(UIImage*)photoBrowser: (SDPhotoBrowser *)browser placeholderImageForIndex: (NSInteger)index;
+
+@optional
+
+-(NSURL*)photoBrowser:(SDPhotoBrowser *)browser highQualityImageURLForIndex:(NSInteger)index;
+
+@end
+
+// SDPhotoBrowser 本身是 UIview
+@interface SDPhotoBrowser : UIView <UIScrollViewDelegate>
+
+// weak UIView sourceImagesContainerView
+@property (nonatomic, weak) UIView* sourceImagesContainerView;
+// 当前图片index
+@property (nonatomic, assign) NSInteger currentImageIndex;
+// 图片总数量
+@property (nonatomic, assign) NSInteger imageCount;
+
+// 协议
+@property (nonatomic, weak) id<SDPhotoBrowserDelegate> delegate;
+
+
+- (void)show;
+@end
+
+//SDPhotoBrowser.m
+#import "SDPhotoBrowser.h"
+
+// SDWebImage
+#import "UIImageView+WebCache.h"
+
+#import "SDBrowserImageView.h"
+#import "SDPhotoBrowserConfig.h"
+
+
+@implementation SDPhotoBrowser{
+
+  UIScrollView* _scrollView;
+  BOOL _hasShowedFirstView;
+  
+  // 照片序标
+  UILabel* _indexLabel;
+  
+  // 保存按钮
+  UIButton* _saveButton;
+  
+  // 
+  UIActivityIndicatorView* _indicatorView;
+
+  //
+  BOOL _willDisappear;
+}
+
+
+// 本质上SDPhotoBrowser 只是一个实现了 UIScrollViewDelegate 的 UIView
+-(instancetype)initWithFrame:(CGRect)frame{
+  self = [super initWithFrame:frame];
+  if (self) {
+    self.backgroundColor = SDPhotoBrowserBackgroundColor;
+  }
+  return self;
+}
+
+// Tells the view that its superview changed.
+-(void)didMoveToSuperview{
+  [self setupScrollView];
+  [self setupToolbars];
+}
+
+// 移除observer
+-(void)dealloc{ 
+  [[UIApplication sharedApplication].keyWindow removeObserver:self forKeyPath:@"frame"];
+}
+
+
+-(void)setupToolbars{
+  
+  // 1. 序标
+  UILabel* indexLabel = [[UILabel alloc] init];
+  indexLabel.bounds = CGRectMake(0, 0, 80, 30);
+  
+  indexLabel.textAlignment = NSTextAlignmentCenter;
+  indexLabel.textColor = [UIColor whiteColor];
+  indexLabel.font = [UIFont boldSystemFontOfSize:20];
+  indexLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+  indexLabel.layer.cornerRadius = indexLabel.bounds.size.height * 0.5;
+  indexLabel.clipsToBounds = YES;
+  // 如果本身的image数量比较多，那么我们会有 1/2, 2/2等....
+  if (self.imageCount > 1) {
+    indexLabel.text = [NSString stringWithFormat:@"1/%ld", (long)self.imageCount];
+  }
+  _indexLabel = indexLabel;
+  [self addSubview:indexLabel];
+  
+  // 2.保存按钮
+  UIButton *saveButton = [[UIButton alloc] init];
+  [saveButton setTitle:@"保存" forState:UIControlStateNormal];
+  [saveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+  saveButton.backgroundColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:0.90f];
+  saveButton.layer.cornerRadius = 5;
+  saveButton.clipsToBounds = YES;
+  [saveButton addTarget:self action:@selector(saveImage) forControlEvents:UIControlEventTouchUpInside];
+  _saveButton = saveButton;
+  [self addSubview:saveButton];
+}
+
+
+-(void) saveImage{
+  // 原来我们用一个scrollView来实现我们左右滑动看大图的功能，而index也是这样计算出来的
+  // 我们用一个 contentOffset.x: The point at which the origin of the content view is offset from the origin of the scroll view.
+  int index = _scrollView.contentOffset.x / _scrollView.bounds.size.width;
+  UIImageView* currentImageView = _scrollView.subviews[index];
+  
+  UIImageWriteToSavedPhotosAlbum(currentImageView.image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
+  
+  UIActivityIndicatorView* indicator = [[UIActivityIndicatorView alloc]init];
+  indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+  indicator.center = self.center;
+  _indicatorView = indicator;
+  [[UIApplication sharedApplication].keyWindow addSubview:indicator];
+  [indicator startAnimating];
+}
+
+
+
+// 保存成功or失败的文字
+-(void)image: (UIImage*)image didFinishSavingWithError:(NSError*)error contextInfo:(void *)contextInfo{
+  [_indicatorView removeFromSuperview];
+  
+  UILabel* label = [[UILabel alloc] init];
+  label.textColor = [UIColor whiteColor];
+  label.backgroundColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:0.90f];
+  label.layer.cornerRadius = 5;
+  label.clipsToBounds = YES;
+  label.bounds = CGRectMake(0, 0, 150, 30);
+  label.center = self.center;
+  label.textAlignment = NSTextAlignmentCenter;
+  label.font = [UIFont boldSystemFontOfSize:17];
+  [[UIApplication sharedApplication].keyWindow addSubview:label];
+  [[UIApplication sharedApplication].keyWindow bringSubviewToFront:label];
+  if (error) {
+    label.text = SDPhotoBrowserSaveImageFailText;
+  } else {
+    label.text = SDPhotoBrowserSaveImageSuccessText;
+  }
+  // delay 之后把文字移除
+  [label performSelector:@selector(removeFromSuperview) withObject:nil afterDelay:1.0];
+}
+
+-(void)setupScrollView{
+  _scrollView = [[UIScrollView alloc] init];
+  _scrollView.delegate = self;
+  _scrollView.showsHorizontalScrollIndicator = NO;
+  _scrollView.showsVerticalScrollIndicator = NO;
+  _scrollView.pagingEnabled = YES;
+  [self addSubview:_scrollView];
+  
+  // 添加图片
+  for (int i = 0; i < self.imageCount ; i++) {
+    SDBrowserImageView* imageView = [[SDBrowserImageView alloc] init];
+    imageView.tag = i;
+    
+    UITapGestureRecognizer* singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(photoClick:)];
+    
+    UITapGestureRecognizer* doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageViewDoubleTapped::)];
+    doubleTap.numberOfTapsRequired = 2;
+    [self addGestureRecognizer:doubleTap];
+    
+    [singleTap requireGestureRecognizerToFail:doubleTap];
+    
+    [imageView addGestureRecognizer:singleTap];
+    [imageView addGestureRecognizer:doubleTap];
+    [_scrollView addSubview:imageView];
+  }
+  
+  [self setupImageOfImageViewForIndex: self.currentImageIndex];
+}
+
+// 为index加载照片
+-(void)setupImageOfImageViewForIndex:(NSInteger)index{
+  SDBrowserImageView* imageView = _scrollView.subviews[index];
+  self.currentImageIndex = index;
+  
+  // 如果 hasLoadedImage， 那么就啥都不操作了。
+  if (imageView.hasLoadedImage) return;
+  if ([self highQualityImageURLForIndex: index]) {
+    [imageView setImageWithURL:[self highQualityImageURLForIndex:index] placeholderImage:[self placeholderImageForIndex:index]];
+  } else {
+    imageView.image = [self placeholderImageForIndex:index];
+  }
+  // 否则我们来加载照片，同时设定这个hasLoadedImage属性为YES
+  imageView.hasLoadedImage = YES;
+}
+
+// 点击消失
+-(void)photoClick:(UITapGestureRecognizer*) recognizer{
+  _scrollView.hidden = YES;
+  _willDisappear = YES;
+  
+  // 被点击的部分的view
+  SDBrowserImageView* currentImageView = (SDBrowserImageView*)recognizer.view;
+  NSInteger currentIndex = currentImageView.tag;
+  
+  UIView* sourceView = self.sourceImagesContainerView.subviews[currentIndex];
+  CGRect targetTemp = [self.sourceImagesContainerView convertRect:sourceView.frame toView:self];
+  
+  // 把图片按照比例方法
+  UIImageView* tempView = [[UIImageView alloc] init];
+  tempView.contentMode = sourceView.contentMode;
+  tempView.clipsToBounds = YES;
+  tempView.image = currentImageView.image;
+  CGFloat h = (self.bounds.size.width / currentImageView.image.size.width) * currentImageView.image.size.height;
+  
+  if (!currentImageView.image) {
+    h = self.bounds.size.height;
+  }
+  
+  tempView.bounds = CGRectMake(0, 0, self.bounds.size.width, h);
+  tempView.center = self.center;
+  
+  [self addSubview:tempView];
+  
+  _saveButton.hidden = YES;
+  
+  // 点击消失，这里的self是SDPhotoBrowser作为self?
+  [UIView animateWithDuration:SDPhotoBrowserHideImageAnimationDuration
+                   animations:^{
+                     tempView.frame = targetTemp;
+                     self.backgroundColor = [UIColor clearColor];
+                     _indexLabel.alpha = 0.1;
+                   } completion:^(BOOL finished) {
+                     [self removeFromSuperview];
+                   }];
+}
+
+// 双击缩放
+- (void)imageViewDoubleTapped: (UITapGestureRecognizer*)recognizer{
+  // 看 SDBrowserImageView 是否已经经历过缩放，是 - 原比例，否 - 放大两倍
+  SDBrowserImageView* imageView = (SDBrowserImageView*)recognizer.view;
+  CGFloat scale;
+  if (imageView.isScaled) {
+    scale = 1.0;
+  } else {
+    scale = 2.0;
+  }
+  
+  SDBrowserImageView* view = (SDBrowserImageView*)recognizer.view;
+  
+  [view doubleTapToZoomWithScale:scale];
+}
+
+// 这里设置了 indexLabel， saveButton 的位置
+// 以及_scrollView的边界等等
+-(void)layoutSubviews{
+  [super layoutSubviews];
+  
+  CGRect rect = self.bounds;
+  rect.size.width += SDPhotoBrowserImageViewMargin * 2;
+  
+  // _scrollView 的边界和中心
+  _scrollView.bounds = rect;
+  _scrollView.center = self.center;
+  
+  CGFloat y = 0;
+  CGFloat w = _scrollView.frame.size.width - SDPhotoBrowserImageViewMargin * 2;
+  CGFloat h = _scrollView.frame.size.height;
+  
+  [_scrollView.subviews enumerateObjectsUsingBlock:^(SDBrowserImageView* obj, NSUInteger idx, BOOL*  stop) {
+    CGFloat x = SDPhotoBrowserImageViewMargin + idx * (SDPhotoBrowserImageViewMargin * 2 + w);
+    obj.frame = CGRectMake(x, y, w, h);
+  }];
+  
+  // The size of the content view.
+  _scrollView.contentSize = CGSizeMake(_scrollView.subviews.count * _scrollView.frame.size.width, 0);
+  // The point at which the origin of the content view is offset from the origin of the scroll view.
+  _scrollView.contentOffset = CGPointMake(self.currentImageIndex * _scrollView.frame.size.width, 0);
+  
+  if (!_hasShowedFirstView) {
+    [self showFirstImage];
+  }
+  
+  _indexLabel.center = CGPointMake(self.bounds.size.width * 0.5, 35);
+  _saveButton.frame = CGRectMake(30, self.bounds.size.height - 70, 50, 25);
+}
+
+-(void) show{
+  UIWindow* window = [UIApplication sharedApplication].keyWindow;
+  self.frame = window.bounds;
+  // 把本身UIview的frame变成跟屏幕一样大
+  // Registers the observer object to receive KVO notifications for the key path relative to the object receiving this message.
+  [window addObserver:self forKeyPath:@"frame" options:0 context:nil];
+  [window addSubview:self];
+}
+
+// 当这个属性改变的时候？
+// Informs the observing object when the value at the specified key path relative to the observed object has changed.
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(UIView*)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+  if ([keyPath isEqualToString:@"frame"]) {
+    self.frame = object.bounds;
+    SDBrowserImageView* currentImageView= _scrollView.subviews[_currentImageIndex];
+    if ([currentImageView isKindOfClass:[SDBrowserImageView class]]) {
+      [currentImageView clear];
+    }
+  }
+}
+
+-(void)showFirstImage{
+  UIView* sourceView = self.sourceImagesContainerView.subviews[self.currentImageIndex];
+  CGRect rect = [self.sourceImagesContainerView convertRect:sourceView.frame toView:self];
+  
+  UIImageView* tempView = [[UIImageView alloc] init];
+  tempView.image = [self placeholderImageForIndex:self.currentImageIndex];
+  
+  [self addSubview:tempView];
+  
+  CGRect targetTemp = [_scrollView.subviews[self.currentImageIndex] bounds];
+  
+  tempView.frame = rect;
+  tempView.contentMode = [_scrollView.subviews[self.currentImageIndex] contentMode];
+  _scrollView.hidden = YES;
+  
+  [UIView animateWithDuration:SDPhotoBrowserShowImageAnimationDuration
+                   animations:^{
+                     tempView.center = self.center;
+                     tempView.bounds = (CGRect){CGPointZero, targetTemp.size};
+                   } completion:^(BOOL finished) {
+                     _hasShowedFirstView = YES;
+                     [tempView removeFromSuperview];
+                     _scrollView.hidden = NO;
+                   }];
+}
+
+-(UIImage*)placeholderImageForIndex:(NSUInteger)index{
+  if ([self.delegate respondsToSelector:@selector(photoBrowser:placeholderImageForIndex:)]) {
+    return [self.delegate photoBrowser:self placeholderImageForIndex:index];
+  }
+  return nil;
+}
+
+-(NSURL*)highQualityImageURLForIndex: (NSInteger)index{
+  if ([self.delegate respondsToSelector:@selector(photoBrowser:highQualityImageForIndex:)]) {
+    return [self.delegate photoBrowser:self highQualityImageURLForIndex:index];
+  }
+  return nil;
+}
+
+#pragma mark - scrollview
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView{
+  int index = (scrollView.contentOffset.x + _scrollView.bounds.size.width * 0.5) / _scrollView.bounds.size.width;
+  
+  CGFloat margin = 150;
+  CGFloat x = scrollView.contentOffset.x;
+  if ((x - index * self.bounds.size.width) > margin || (x - index * self.bounds.size.width) < -margin ) {
+    SDBrowserImageView* imageView = _scrollView.subviews[index];
+    if (imageView.isScaled) {
+      [UIView animateWithDuration:0.5
+                       animations:^{
+                         imageView.transform = CGAffineTransformIdentity;
+                       } completion:^(BOOL finished) {
+                         [imageView eliminateScale];
+                       }];
+    }
+  }
+  
+  if (!_willDisappear) {
+    _indexLabel.text = [NSString stringWithFormat:@"%d/%ld", index + 1, (long)self.imageCount];
+  }
+  
+  [self setupImageOfImageViewForIndex:index];
+}
+
+@end
+
+
+当我们进入朋友圈这个界面之后，当我们开始滑动UITableView，并没有什么太大的不同，但是当我们去点击朋友圈moment中的一张图片：
+
+
+2018-06-30 10:30:17.925317+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser initWithFrame:
+
+之所以会调用Show是因为 photo collection view 中我们设定 didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
+
+2018-06-30 10:30:17.925621+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser show
+
+在 show 中我们有  [window addSubview:self]; 所以我们会调用系统默认方法 didMoveToSuperview
+
+2018-06-30 10:30:17.926173+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser didMoveToSuperview
+
+
+didMoveToSuperview 中会调用两个方法：   [self setupScrollView]; 和  [self setupToolbars];
+
+
+2018-06-30 10:30:17.926342+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser setupScrollView
+
+setUpScrollView 中我们会创建 SDBrowserImageView，并且把它添加进我们SDPhotoBrowser的scrollView 
+调用 SDBrowserImageView 的 init 方法。
+
+2018-06-30 10:30:17.927179+0800 Fake-Wechat[15070:1614172] SDBrowserImageView initWithFrame:
+
+此时的SDBrowserImageView 和 SDBrowserImageView 中的 _zoomingImageView 为nil
+
+2018-06-30 10:30:17.927648+0800 Fake-Wechat[15070:1614172] (null)
+
+继续调用 SDPhotoBrowser setupImageOfImageViewForIndex
+
+2018-06-30 10:30:17.928149+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser setupImageOfImageViewForIndex:
+
+
+下面是一个返回nil的方法
+
+2018-06-30 10:30:17.928313+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser highQualityImageURLForIndex:
+
+继续调用寻找
+
+-(UIImage*)placeholderImageForIndex:(NSUInteger)index{
+  NSLog(@"SDPhotoBrowser %@", NSStringFromSelector(_cmd));
+
+  if ([self.delegate respondsToSelector:@selector(photoBrowser:placeholderImageForIndex:)]) {
+    return [self.delegate photoBrowser:self placeholderImageForIndex:index];
+  }
+  return nil;
+}
+
+这个方法会装入照片？
+
+2018-06-30 10:30:17.928491+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser placeholderImageForIndex:
+
+
+添加toolbar： 序标 和 保存 按钮
+
+2018-06-30 10:30:17.928821+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser setupToolbars
+
+图片之前已经载入 _scrollView,我们把它的布局添加正确
+
+2018-06-30 10:30:17.930217+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser layoutSubviews
+
+2018-06-30 10:30:17.930485+0800 Fake-Wechat[15070:1614172] have I ever had a chance into this switch?
+
+展示第一张图片
+
+
+2018-06-30 10:30:17.930599+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser showFirstImage
+
+2018-06-30 10:30:17.930757+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser placeholderImageForIndex:
+
+2018-06-30 10:30:17.932174+0800 Fake-Wechat[15070:1614172] SDBrowserImageView layoutSubviews
+
+2018-06-30 10:30:18.334001+0800 Fake-Wechat[15070:1614172] SDPhotoBrowser layoutSubviews
+
+

@@ -1,0 +1,289 @@
+对于一条一条的moment，我们用的是Moment这个model。
+Moment下面又会有Comment，背后的model也就是Comment这个类。
+
+这两个类就算朋友圈的所有model了。
+
+
+@class Moment;
+@interface MomentTableViewCell : UITableViewCell
+
+-(void)setModel:(Moment*)model;
+
+@property(nonatomic, copy) void (^toggleTextExpand)(NSIndexPath* indexPath);
+
+@end
+
+
+
+#import "Comment.h"
+#import "CommentTableViewController.h"
+#import "Moment.h"
+#import "MomentTableViewCell.h"
+#import "PhotosCollectionViewController.h"
+#import "TTTAttributedLabel.h"
+#import "UIView+SDAutoLayout.h"
+#import "WechatHelper.h"
+
+static NSString* const kBlogLink = @"http://siegrain.wang";
+static NSString* const kGithubLink = @"https://github.com/Seanwong933";
+
+static NSUInteger const kAvatarSize = 40;
+static NSInteger const kContentLineCount = 6;
+
+@interface MomentTableViewCell()<TTTAttributedLabelDelegate>
+
+// 发pyq的人
+@property(strong, nonatomic) UIImageView* avatarImageView;
+// 名字
+@property(strong, nonatomic) TTTAttributedLabel* nameLabel;
+// 内容
+@property(strong, nonatomic) TTTAttributedLabel* contentLabel;
+// 也是一个难点： 照片是 CollectionVCC
+@property(strong, nonatomic) PhotosCollectionViewController* photosController;
+// timeLabel
+@property(strong, nonatomic) UILabel* timeLabel;
+// 点赞
+@property(strong, nonatomic) UIImageView* likeCommentLogoView;
+
+// 评论的？
+@property(strong, nonatomic) UIImageView* commentsBubbleView;
+// 评论
+@property(strong, nonatomic) CommentTableViewController* commentsController;
+// 显示全部，因为pyq会很长
+@property(strong, nonatomic) UIButton* fullTextButton;
+// 朋友圈的model
+@property(strong, nonatomic) Moment* model;
+@end
+
+
+@implementation MomentTableViewCell
+
+- (void)dealloc{
+  NSLog(@"MomentTableViewCell dealloced");
+}
+
+#pragma mark - init
+-(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
+  if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+    [self buildCell];
+    [self bindConstrantsSD];
+  }
+  return self;
+}
+
+-(void)setModel:(Moment *)model{
+  _model = model;
+  
+  self.avatarImageView.image = model.avatar;
+  self.nameLabel.text = model.name;
+  self.contentLabel.text = model.content;
+  self.photosController.photosArray = model.pictures;
+  self.timeLabel.text = @"1分钟前";
+  self.commentsController.comments = model.comments;
+  
+  // ? ？ 为什么需要weak self， 是为了防止循环引用么？
+  __weak typeof(self) weakSelf = self;
+  if ([model.name isEqualToString:@"Siegrain Wong"]) {
+    NSRange blogRane = [model.content rangeOfString:kBlogLink];
+    NSRange githubRange = [model.content rangeOfString:kGithubLink];
+    
+    if (blogRane.location != NSNotFound)
+      [weakSelf.contentLabel addLinkToURL:[NSURL URLWithString:kBlogLink] withRange:blogRane];
+    if (githubRange.location != NSNotFound) {
+      [weakSelf.contentLabel addLinkToURL:[NSURL URLWithString:kGithubLink] withRange:githubRange];
+    }
+    
+    [self updateConstraints];
+  }
+}
+
+-(void)buildCell{
+  // 禁止选择
+  self.selectionStyle = UITableViewCellSelectionStyleNone;
+  
+  // 头像
+  self.avatarImageView = [[UIImageView alloc] init];
+  [self.contentView addSubview:self.avatarImageView];
+  
+  // 名字
+  self.nameLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+  self.nameLabel.textColor = [WechatHelper wechatFontColor];
+  self.nameLabel.font = [UIFont systemFontOfSize:15 weight:0.2];
+  self.nameLabel.verticalAlignment = UIControlContentVerticalAlignmentTop;
+  [self.contentView addSubview:self.nameLabel];
+  
+  // 内容
+  self.contentLabel = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
+  self.contentLabel.delegate = self;
+  self.contentLabel.numberOfLines = 0;
+  self.contentLabel.verticalAlignment = UIControlContentVerticalAlignmentTop;
+  self.contentLabel.font = [UIFont systemFontOfSize:15];
+  self.contentLabel.linkAttributes = @{(NSString*) kCTForegroundColorAttributeName: [WechatHelper wechatFontColor]};
+  [self.contentView addSubview:self.contentLabel];
+  
+  // 显示全文按钮
+  self.fullTextButton = [[UIButton alloc] init];
+  self.fullTextButton.titleLabel.font = [UIFont systemFontOfSize:15];
+  [self.fullTextButton setTitleColor:[WechatHelper wechatFontColor] forState:UIControlStateNormal];
+  [self.fullTextButton setBackgroundImage:[WechatHelper imageWithColor:[UIColor lightGrayColor]] forState:UIControlStateHighlighted];
+  self.fullTextButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+  [self.fullTextButton addTarget:self action:@selector(toggleTextExpand:) forControlEvents:UIControlEventTouchUpInside];
+  [self.contentView addSubview:self.fullTextButton];
+  
+  // 发照片的collectionView
+  UICollectionViewFlowLayout* flow = [[UICollectionViewFlowLayout alloc] init];
+  self.photosController = [[PhotosCollectionViewController alloc] initWithCollectionViewLayout:flow];
+  [self.contentView addSubview:self.photosController.collectionView];
+  
+  // 时间线
+  self.timeLabel = [[UILabel alloc] init];
+  self.timeLabel.font = [UIFont systemFontOfSize:12];
+  self.timeLabel.textColor = [UIColor colorWithWhite:.5 alpha:1];
+  [self.contentView addSubview:self.timeLabel];
+  
+  // 点赞按钮
+  self.likeCommentLogoView = [[UIImageView alloc] init];
+  self.likeCommentLogoView.image = [UIImage imageNamed:@"AlbumOperateMore"];
+  [self.contentView addSubview:self.likeCommentLogoView];
+  
+  // 评论按钮
+  self.commentsBubbleView = [[UIImageView alloc] init];
+  self.commentsBubbleView.userInteractionEnabled = true;
+  UIImage* bubbleImage = [UIImage imageNamed:@"LikeCmtBg"];
+  self.commentsBubbleView.image = [bubbleImage stretchableImageWithLeftCapWidth:30 topCapHeight:30];
+  [self.contentView addSubview:self.commentsBubbleView];
+  
+  // 评论vc
+  self.commentsController = [[CommentTableViewController alloc] init];
+  [self.commentsBubbleView addSubview:self.commentsController.tableView];
+}
+
+- (void)bindConstrantsSD {
+  // Returns the content view of the cell object.
+  UIView* contentView = self.contentView;
+  
+  // 来自于	UIView+SDAutoLayout.h  (SDAutoLayoutModel *)sd_layout;
+  self.avatarImageView.sd_layout
+  .topSpaceToView(contentView, 10)
+  .leftSpaceToView(contentView, 10)
+  .widthIs(kAvatarSize)
+  .heightIs(kAvatarSize);
+  
+  // 名字在头像右边
+  self.nameLabel.sd_layout
+  .leftSpaceToView(self.avatarImageView, 10)
+  .rightSpaceToView(contentView, 10)
+  .topEqualToView(self.avatarImageView)
+  .heightIs(18);
+  
+  // 内容，传入0 自适应高度，传入高宽比值，label可以传0实现文字高度自适应
+  self.contentLabel.sd_layout
+  .leftEqualToView(self.nameLabel)
+  .topSpaceToView(self.nameLabel, 5)
+  .rightSpaceToView(contentView, 10)
+  .autoHeightRatio(0);
+  
+  //展开button
+  self.fullTextButton.sd_layout
+  .leftEqualToView(self.contentLabel)
+  .topSpaceToView(self.contentLabel, 5)
+  .widthIs(30)
+  .heightIs(18);
+  
+  //图片
+  self.photosController.collectionView.sd_layout
+  .leftEqualToView(self.nameLabel)
+  .topSpaceToView(self.fullTextButton, 5);
+  
+  // 时间label
+  self.timeLabel.sd_layout
+  .topSpaceToView(self.photosController.collectionView, 5)
+  .leftEqualToView(self.nameLabel)
+  .heightIs(15)
+  .autoHeightRatio(0);
+  
+  // like button
+  self.likeCommentLogoView.sd_layout
+  .rightSpaceToView(contentView, 10)
+  .centerYEqualToView(self.timeLabel)
+  .heightIs(25)
+  .widthIs(25);
+  
+  // commentsBubble
+  self.commentsBubbleView.sd_layout
+  .topSpaceToView(self.timeLabel, 5)
+  .leftEqualToView(self.nameLabel)
+  .rightSpaceToView(contentView, 10);
+  
+  // comments 本身也是tableView
+  self.commentsController.tableView.sd_layout
+  .spaceToSuperView(UIEdgeInsetsMake(9, 3, 0, 5));
+
+}
+
+-(void)updateConstraints{
+  
+  UIView* bottomView;
+  UITableView* commentView = self.commentsController.tableView;
+  if (!self.model.comments.count) {
+    // 如果没有comments，那么我们就都设定为0
+    // 设置固定宽度保证宽度不在自动布局过程再做中调整  UIView+SDAutoLayout.h
+    self.commentsBubbleView.fixedWidth = @0;
+    self.commentsBubbleView.fixedHeight = @0;
+    bottomView = self.timeLabel;
+  } else {
+    // 否则我们给commentsBubbleView固定的高度？
+    self.commentsBubbleView.fixedWidth = nil;
+    self.commentsBubbleView.fixedHeight = @(commentView.contentSize.height + 15);
+    bottomView = self.commentsBubbleView;
+  }
+  [self setupAutoHeightWithBottomView:bottomView bottomMargin:10];
+  
+  // 如果model的contentLineCount还没有设定
+  if (!self.model.contentLineCount) {
+    self.model.contentLabelHeight = [self calculateContentLabelHeight];
+    self.model.contentLabelHeight = self.model.contentLabelHeight / self.contentLabel.font.lineHeight;
+  }
+  
+  if (self.model.contentLineCount > kContentLineCount) {
+    self.fullTextButton.sd_layout.heightIs(18);
+    self.fullTextButton.hidden = false;
+    if (self.model.isContentExpaned) {
+      self.contentLabel.sd_layout.maxHeightIs(MAXFLOAT);
+      [self.fullTextButton setTitle:@"收起" forState:UIControlStateNormal];
+    } else {
+      self.contentLabel.sd_layout.maxHeightIs(self.contentLabel.font.lineHeight * kContentLineCount);
+      [self.fullTextButton setTitle:@"全文" forState:UIControlStateNormal];
+    }
+  } else {
+    self.fullTextButton.sd_layout.heightIs(0);
+    self.fullTextButton.hidden = true;
+  }
+  [super updateConstraints];
+}
+
+#pragma mark - expand contentLabel text
+- (void)toggleTextExpand:(UIButton*)sender{
+  MomentTableViewCell* cell = (MomentTableViewCell*)sender.superview.superview;
+  if (self.toggleTextExpand) {
+    self.toggleTextExpand(cell.model.indexPath);
+  }
+}
+
+#pragma mark - attributed label delegate
+-(void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url{
+  [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+}
+
+#pragma mark -
+-(CGFloat) calculateContentLabelHeight{
+  CGFloat labelWidth = [UIScreen mainScreen].bounds.size.width - kAvatarSize - 3 * 10;
+  CGSize maxSize = CGSizeMake(labelWidth, MAXFLOAT);
+  NSDictionary* textAttrs = @{NSFontAttributeName: self.contentLabel.font};
+  return [self.contentLabel.text
+          boundingRectWithSize:maxSize
+          options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
+          attributes:textAttrs
+          context:nil].size.height;
+}
+@end

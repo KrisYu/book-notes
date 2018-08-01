@@ -1,0 +1,22 @@
+十字链表
+
+顶点表结构： | data | firstin | firstout |
+边表结构：   | tailvex | headvex | headlink | taillink |
+
+将邻接表与逆邻接表组合起来，注意正如邻接表结构一样，我们也有两种： 顶点与边的结构。
+firstin/firstout: 入边/出边表头指针
+tailvex 弧起点在顶点表的下标
+headvex 弧终点在顶点表中的下标
+headlink 指入边表指针域，指向终点相同的下一条边
+taillink 指边表指针域，指向起点相同的下一条边
+
+
+邻接多重表
+
+边表结点： | ivex | ilink | jvex | jlink |
+
+ivex 和 jvex 是某条边依附的两个顶点在顶点表中下标。 ilink 指向依附顶点 ivex 的下一条边， jlink 指向依附顶点 jvex 的下一条边。
+
+边集数组
+
+边数组: | begin | end | weight |

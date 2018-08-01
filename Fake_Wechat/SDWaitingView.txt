@@ -1,0 +1,85 @@
+
+// SDWaitingView.h 
+#import <UIKit/UIKit.h>
+#import "SDPhotoBrowserConfig.h"
+
+@interface SDWaitingView : UIView
+
+@property (nonatomic, assign) CGFloat progress;
+@property (nonatomic, assign) int mode;
+
+@end
+
+// SDWaitingView.m
+
+#import "SDWaitingView.h"
+
+@implementation SDWaitingView
+
+-(instancetype)initWithFrame:(CGRect)frame{
+  self = [super initWithFrame:frame];
+  if (self) {
+    self.backgroundColor = SDWaitingViewBackgroundColor;
+    self.layer.cornerRadius = 5;
+    // clipsToBounds 就是困在区域内
+    self.clipsToBounds = YES;
+    self.mode = SDWaitingViewModeLoopDiagram;
+  }
+  return self;
+}
+
+-(void)setProgress:(CGFloat)progress{
+  _progress = progress;
+  // 每次设置progress，都会重新显示
+  [self setNeedsDisplay];
+  if (progress >= 1) {
+    [self removeFromSuperview];
+  }
+}
+
+
+- (void)drawRect:(CGRect)rect {
+  CGContextRef ctx = UIGraphicsGetCurrentContext();
+  
+  CGFloat xCenter = rect.size.width * 0.5;
+  CGFloat yCenter = rect.size.height * 0.5;
+  [[UIColor whiteColor] set];
+  
+  switch (self.mode) {
+    case SDWaitingViewModePieDiagram:{
+      //如果是pie状，计算出radius
+      CGFloat radius = MIN(rect.size.width * 0.5, rect.size.height * 0.5) - SDWaitingViewItemMargin;
+      
+      CGFloat w = radius * 2 + SDWaitingViewItemMargin;
+      CGFloat h = w;
+      CGFloat x = (rect.size.width - w ) * 0.5;
+      CGFloat y = (rect.size.height - h ) * 0.5;
+      CGContextAddEllipseInRect(ctx, CGRectMake(x, y, w, h));
+      CGContextFillPath(ctx);
+      
+      [SDWaitingViewBackgroundColor set];
+      CGContextMoveToPoint(ctx, xCenter, yCenter);
+      CGContextAddLineToPoint(ctx, xCenter, 0);
+      CGFloat to = -M_PI * 0.5 + self.progress * M_PI * 2 + 0.001; // initial
+      CGContextAddArc(ctx, xCenter, yCenter, radius, - M_PI * 0.5, to, 1);
+      CGContextClosePath(ctx);
+      
+      CGContextFillPath(ctx);
+    }
+    break;
+      
+    default: {
+      CGContextSetLineWidth(ctx, 15);
+      CGContextSetLineCap(ctx, kCGLineCapRound);
+      CGFloat to = -M_PI * 0.5 + self.progress * M_PI * 2 + 0.05; // initial
+      CGFloat radius = MIN(rect.size.width, rect.size.height) * 0.5 - SDWaitingViewItemMargin;
+      CGContextAddArc(ctx, xCenter, yCenter, radius, - M_PI * 0.5, to, 0);
+      CGContextStrokePath(ctx);
+    }
+      break;
+  }
+  
+}
+
+
+@end

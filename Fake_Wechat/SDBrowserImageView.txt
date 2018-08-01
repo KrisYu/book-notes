@@ -1,0 +1,270 @@
+
+// SDBrowserImageView.h
+
+#import <UIKit/UIKit.h>
+#import "SDWaitingView.h"
+
+@interface SDBrowserImageView : UIImageView <UIGestureRecognizerDelegate>
+
+@property (nonatomic, assign) CGFloat progress;
+@property (nonatomic, assign, readonly) BOOL isScaled;
+@property (nonatomic, assign) BOOL hasLoadedImage;
+
+-(void)eliminateScale;
+
+-(void)setImageWithURL:(NSURL*)url placeholderImage:(UIImage*) placeholder;
+
+-(void)doubleTapToZoomWithScale:(CGFloat)scale;
+
+-(void)clear;
+
+@end
+
+//SDBrowserImageView.m
+
+#import "SDBrowserImageView.h"
+#import "SDPhotoBrowserConfig.h"
+// from SDWebImage
+#import "UIImageView+WebCache.h"
+
+// SDBrowserImageView 继承于 ImageView
+
+@implementation SDBrowserImageView {
+  //
+  __weak SDWaitingView* _waitingView;
+  
+  // 用于横屏时候图片太高的状况
+  UIScrollView* _scroll;
+  UIImageView* _scrollImageView;
+  
+  // 用于缩放
+  UIScrollView* _zoomingScrollView;
+  UIImageView* _zoomingImageView;
+  
+  CGFloat _totalScale;
+}
+
+-(instancetype)initWithFrame:(CGRect)frame{
+  self = [super initWithFrame:frame];
+  if (self) {
+    self.userInteractionEnabled = YES;
+    self.contentMode = UIViewContentModeScaleAspectFit;
+    _totalScale = 1.0;
+    
+    UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(zoomImage:)];
+    pinch.delegate = self;
+    [self addGestureRecognizer:pinch];
+  }
+  return self;
+}
+
+// readonly property
+-(BOOL)isScaled{
+  return 1.0 != _totalScale;
+}
+
+// 这个layout subviews 牵扯到了 _scroll 和 _scrollImageView
+//
+// 这个方法有两种状况被调用：
+//  1. 我们点击查看大图 - if部分不会被执行
+//  2. 如果我们横屏 - 
+
+-(void)layoutSubviews{
+  [super layoutSubviews];
+  _waitingView.center = CGPointMake(self.frame.size.width * 0.5, self.frame.size.height * 0.5);
+  
+  CGSize imageSize = self.image.size;
+  
+  // 这是为了处理我们转动屏幕，比如横屏，我们会碰到的一些状况
+  // 比如横屏状况下，我们的图片比屏幕高，所以用一个scroll view，这样我们可以移动图片。
+  if (self.bounds.size.width * (imageSize.height / imageSize.width) > self.bounds.size.height) {
+    // 检查_scroll是否存在 
+    if (!_scroll) {
+      UIScrollView *scroll = [[UIScrollView alloc] init];
+      scroll.backgroundColor = [UIColor whiteColor];
+      UIImageView* imageView = [[UIImageView alloc]init];
+      // self.image 是因为本身我们这个是一个ImageView，所以有 self.image 这个属性
+      // 而self.image 在 setImageWithURL 中已经被设定
+      imageView.image = self.image;
+      _scrollImageView = imageView;
+      [scroll addSubview:imageView];
+      scroll.backgroundColor = SDPhotoBrowserBackgroundColor;
+      _scroll = scroll;
+      [self addSubview:scroll];
+      if (_waitingView) {
+        [self bringSubviewToFront:_waitingView];
+      }
+    }
+    
+    // 设定_scrollView的frame， 这个frame继承自UIView， 但是这个self.bounds 则是图片的边界
+    _scroll.frame = self.bounds;
+    
+    // 按照比例缩放图片
+    CGFloat imageViewH = self.bounds.size.width * (imageSize.height / imageSize.width);
+    
+    // 设置图片的边界
+    _scrollImageView.bounds = CGRectMake(0, 0, _scroll.frame.size.width, imageViewH);
+    // 中心，但其实也就是图片的中心
+    _scrollImageView.center = CGPointMake(_scroll.frame.size.width * 0.5, _scrollImageView.frame.size.height * 0.5);
+    
+    // 这种情况都是 _scrollImageView 的size 比 _scoll.contentSize大，
+    NSLog(@"_scrollImageView view size: %@", NSStringFromCGSize(_scrollImageView.frame.size));
+    _scroll.contentSize = CGSizeMake(0, _scrollImageView.bounds.size.height);
+    // 这里把contentSize的witdh设定为0只是为了禁止移动x方向。
+    NSLog(@"_scroll view size: %@", NSStringFromCGSize(_scroll.frame.size));
+    NSLog(@"screen bounds: %@", NSStringFromCGRect([UIScreen mainScreen].bounds));
+    // scroll.frame.size == main screen size
+  } else {
+    if (_scroll) [_scroll removeFromSuperview]; // 防止旋转时适配的scrollView的影响?
+  }
+}
+
+-(void)setProgress:(CGFloat)progress{
+  _progress = progress;
+  _waitingView.progress = progress;
+}
+
+-(void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder{
+  
+  SDWaitingView* waiting = [[SDWaitingView alloc] init];
+  waiting.bounds = CGRectMake(0, 0, 100, 100);
+  waiting.mode = SDWaitingViewProgressMode;
+  
+  _waitingView = waiting;
+  [self addSubview:waiting];
+  
+  __weak SDBrowserImageView* imageViewWeak = self;
+  
+  // Set the imageView `image` with an `url`, placeholder and custom options.
+  // The download is asynchronous and cached.
+  // 之所以这里用 imageViewWeak 是因为在方法里，我们调用了 removeWaitingView, addSubview 等方法
+  // 会出现memory cycle，所以我们需要用weak self.
+  [self sd_setImageWithURL:url
+          placeholderImage:placeholder
+                   options:SDWebImageRetryFailed
+                  progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL* targetURL) {
+                    imageViewWeak.progress = (CGFloat)receivedSize / expectedSize;
+                  } completed:^(UIImage*  image, NSError * error, SDImageCacheType cacheType, NSURL * imageURL) {
+                    [imageViewWeak removeWaitingView];
+                    
+                    // 加载失败
+                    if (error) {
+                      UILabel* label = [[UILabel alloc] init];
+                      label.bounds = CGRectMake(0, 0, 160, 30);
+                      label.center = CGPointMake(imageViewWeak.bounds.size.width * 0.5, imageViewWeak.bounds.size.height * 0.5);
+                      label.text = @"图片加载失败";
+                      label.font = [UIFont systemFontOfSize:16];
+                      label.textColor = [UIColor whiteColor];
+                      label.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.8];
+                      label.layer.cornerRadius = 5;
+                      label.clipsToBounds = YES;
+                      label.textAlignment = NSTextAlignmentCenter;
+                      [imageViewWeak addSubview:label];
+                    } else {
+                      // 这里有一点疑问，可能_scrollImageView 为 nil
+                      _scrollImageView.image = image;
+                      [_scrollImageView setNeedsDisplay];
+                    }
+                  }];
+
+}
+
+
+// 每次把recognizer的scale重置为1,防止缩放叠加
+-(void)zoomImage: (UIPinchGestureRecognizer*) recognizer{
+  [self prepareForImageViewScaling];
+  CGFloat scale = recognizer.scale;
+  CGFloat temp = _totalScale + (scale - 1);
+  [self setTotalScale: temp];
+  recognizer.scale = 1.0;
+}
+
+-(void)setTotalScale: (CGFloat) totalScale{
+  if ((_totalScale < 0.5 && totalScale < _totalScale) || (_totalScale > 2.0 && totalScale > _totalScale )) return; // 最大缩放 2倍,最小0.5倍
+  
+  [self zoomWithScale:totalScale];
+}
+
+- (void)zoomWithScale: (CGFloat)scale{
+  _totalScale = scale;
+  
+  // 首先变换 _zoomingImageView
+  _zoomingImageView.transform = CGAffineTransformMakeScale(scale, scale);
+  
+  // 当缩放大于1的时候
+  if (scale > 1) {
+    CGFloat contentW = _zoomingImageView.frame.size.width;
+    CGFloat contentH = MAX(_zoomingImageView.frame.size.height, self.frame.size.height);
+    
+    // 控制缩放的中心以及偏移量，这样才能让缩放之后的中心也保持在手机屏幕中心
+    _zoomingImageView.center = CGPointMake(contentW * 0.5, contentH * 0.5);
+    _zoomingScrollView.contentSize = CGSizeMake(contentW, contentH);
+    
+    CGPoint offset = _zoomingScrollView.contentOffset;
+    offset.x = (contentW - _zoomingScrollView.frame.size.width) * 0.5;
+    
+    _zoomingScrollView.contentOffset = offset;
+  } else {
+    _zoomingScrollView.contentSize = _zoomingScrollView.frame.size;
+    _zoomingScrollView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+    _zoomingImageView.center = _zoomingScrollView.center;
+  }
+}
+
+-(void)doubleTapToZoomWithScale:(CGFloat)scale{
+  [self prepareForImageViewScaling];
+  [UIView animateWithDuration:0.5 animations:^{
+    [self zoomWithScale:scale];
+  } completion:^(BOOL finished) {
+    if (scale == 1) {
+      [self clear];
+    }
+  }];
+}
+
+// 在prepareForImageViewScaling中我们生成和添加 _zoomingScrollView 和 _zoomingImageView
+-(void) prepareForImageViewScaling{
+  if (!_zoomingScrollView) {
+    _zoomingScrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+    _zoomingScrollView.backgroundColor = SDPhotoBrowserBackgroundColor;
+    _zoomingScrollView.contentSize = self.bounds.size;
+    UIImageView* zoomingImageView = [[UIImageView alloc] initWithImage:self.image];
+    CGSize imageSize = zoomingImageView.image.size;
+    CGFloat imageViewH = self.bounds.size.height;
+    if (imageSize.width > 0) {
+      imageViewH = self.bounds.size.width * (imageSize.height / imageSize.width);
+    }
+    // 把 height 按 width 缩放
+    zoomingImageView.bounds = CGRectMake(0, 0, self.bounds.size.width, imageViewH);
+    
+    zoomingImageView.center = _zoomingImageView.center;
+    zoomingImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _zoomingImageView = zoomingImageView;
+    [_zoomingScrollView addSubview:zoomingImageView];
+    [self addSubview:_zoomingScrollView];
+  }
+}
+
+
+
+- (void)scaleImage: (CGFloat)scale{
+  [self prepareForImageViewScaling];
+  [self setTotalScale:scale];
+}
+
+- (void)eliminateScale{
+  [self clear];
+  _totalScale = 1.0;
+}
+
+// clear: _zoomingScrollView 和 _zoomingImageView 设定为nil
+- (void) clear {
+  [_zoomingScrollView removeFromSuperview];
+  _zoomingScrollView = nil;
+  _zoomingImageView = nil;
+}
+
+- (void)removeWaitingView{
+  [_waitingView removeFromSuperview];
+}
+@end

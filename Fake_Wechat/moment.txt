@@ -1,0 +1,78 @@
+//  Moment.h
+
+#import <UIKit/UIKit.h>
+
+@interface Moment : NSObject
+
+@property (copy, nonatomic) NSString* content;
+@property (copy, nonatomic) NSString* name;
+@property (strong, nonatomic) UIImage* avatar;
+
+@property (copy, nonatomic) NSArray* pictures;
+@property (copy, nonatomic) NSArray* comments;
+
+@property (strong, nonatomic) NSIndexPath* indexPath;
+@property (assign, nonatomic) NSInteger height;
+@property (assign, nonatomic) NSInteger contentLineCount;
+@property (assign, nonatomic) CGFloat contentLabelHeight;
+
+@property (assign, nonatomic) BOOL isContentExpaned;
+
++ (instancetype) momentWithContent: (NSString*) content name:(NSString*)name pictures: (NSArray*)pictures comments:(NSArray*)comments;
+
+@end
+
+
+// Moment.m
+
+#import "Moment.h"
+
+@implementation Moment
+
++(instancetype) momentWithContent:(NSString *)content name:(NSString *)name pictures:(NSArray *)pictures comments:(NSArray *)comments{
+  Moment* model = [[Moment alloc] init];
+  model.content = content;
+  model.name = name;
+  model.pictures = pictures;
+  model.comments = comments;
+
+  return model;
+}
+@end
+
+
+可以看到虽然Moment有很多属性，但是实际上赋值得到的就那么几个，更多的是之后计算出来的。
+
+比如 height, indexPath, contentLineCount countLabelHeight, isContentExpaned。
+
+
+//  Comment.h
+
+#import <Foundation/Foundation.h>
+
+@interface Comment : NSObject
+
+@property (strong, nonatomic) NSString* name;
+@property (strong, nonatomic) NSString* content;
+@property (assign, nonatomic) float height;
+
++ (instancetype)commentWithName: (NSString*)name content:(NSString*)content;
+@end
+
+
+// Comment.m
+
+#import "Comment.h"
+
+@implementation Comment
++(instancetype) commentWithName:(NSString *)name content:(NSString *)content
+{
+  Comment* model = [[Comment alloc] init];
+  model.name = name;
+  model.content = content;
+
+  return model;
+}
+@end
+
+同样comment的height也是计算出来的。

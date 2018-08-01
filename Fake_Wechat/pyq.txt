@@ -1,5 +1,13 @@
 朋友圈界面也是tableview， 由 MomentsTableViewController 来展现。
 朋友圈会很复杂，因为包含内容/评论，点开查看评论，发朋友圈的时间，点击查看大图，保存, etc...
+实际上发现：其实项目中有一部分代码并没有被使用到，而重点包括：
+
+- comments 用了 tableview
+- moments 本身是 tableview
+- 照片群用了 scrollview
+- 单张照片也用了scrollview
+
+写到后面还是对齐出问题，真的复杂的布局真是想！！！
 
 
 #import "CoverHeaderView.h"
@@ -91,6 +99,7 @@ static NSUInteger const kCoverViewHeight = 450;
   [super viewDidLoad];
 
   // 这样我们把tableview放在上面-150处，这样我们可以下拉刷新
+  //
   self.contentInsetY = -150;
 
   [self buildTableview];
