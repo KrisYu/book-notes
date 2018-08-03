@@ -9,6 +9,7 @@
 - [ ] Core Data by Tutorials: [Code](https://github.com/KrisYu/Core-Data-by-Tutorials)  [Notes](Core_Data_by_Tutorials)
 - [x] Objective-C高级编程 ： iOS与OS X多线程和内存管理
 - [x] Effective Objective-C 2.0 : [笔记](EOCNotes.md)
+- [x] 大话数据结构 : [笔记](data_structre.md)
 - [ ] 大话设计模式: [笔记](Design_Pattern_notes.md)  [Design-Pattern-For-iOS](https://github.com/huang303513/Design-Pattern-For-iOS) [Swift-X-Design-Patterns](https://github.com/kingcos/Swift-X-Design-Patterns)
 - [ ] 各类文档：http://idup.club/library
 
@@ -84,7 +85,7 @@ learn c the hard way
 - [x] 介绍UISearchController: [解答](Fake_Wechat/介绍UISearchController.md)
 - [x] App结构: [解答](Fake_Wechat/structure.txt)
 - [x] 朋友圈: [解答](Fake_Wechat/pyq.txt)
-- [x] NSMa
+
 
 thoughts:
 
@@ -104,36 +105,3 @@ thoughts:
 - [x] 内存泄露检测？
 - [x] UIScrollView: [解答](thoughts/UIScrollView.md)
 
-大话数据结构: 
-
-- [x] 结构体和指针: [解答](data_structure/structPointer.txt)
-- [x] 线性表的array实现: [解答](data_structure/list1.c)
-- [x] 线性表的linklist实现: [解答](data_structure/list2.c)
-- [x] 静态链表: [解答](data_structure/list3.c)
-- [x] 单循环链表: [解答](data_structure/circular_linked_list.txt)
-- [x] 双向链表: [解答](data_structure/double_linked_list.txt)
-- [x] 表实现栈: [解答](data_structure/stack1.c)
-- [x] 两栈共享空间: [解答](data_structure/stack2.c)
-- [x] 链栈: [解答](data_structure/stack3.c)
-- [x] 递归: [解答](data_structure/fib.c)
-- [x] 后缀表达式: [解答](data_structure/rpn.txt)
-- [x] 循环队列: [解答](data_structure/queue1.c)
-- [x] 链队列: [解答](data_structure/queue2.c)
-- [x] 串暴力匹配: [解答](data_structure/string.c)
-- [x] KMP匹配: [解答](data_structure/kmp.c)
-- [x] 树的双亲表示法: [解答](data_structure/tree1.c)
-- [x] 树的孩子表示法: [解答](data_structure/tree2.c)
-- [x] 孩子兄弟表示法: [解答](data_structure/tree3.c)
-- [x] 二叉树&遍历: [解答](data_structure/tree_binary.c)
-- [x] 线索二叉树: [解答](data_structure/tree_clue.c)
-- [x] 霍夫曼编码/霍夫曼树: [解答](data_structure/huffman.txt)
-- [x] 图邻接矩阵: [解答](data_structure/graph1.c)
-- [x] 图邻接表: [解答](data_structure/graph2.c)
-- [x] 其它表示: [解答](data_structure/graph3.txt)
-- [x] 图的深度优先遍历: [解答](data_structure/graph_dfs.c)
-- [x] 图的广度优先遍历: [解答](data_structure/graph_dfs.c)
-- [x] 最小生成树Prim算法: [解答](data_structure/prim.c)
-- [x] 最小生成树Kruskal算法: [解答](data_structure/kruskal.c)
-- [x] 最短路径Dijkstra算法: [解答](data_structure/dijkstra.c)
-- [x] 最短路径Floyd算法: [解答](data_structure/floyd.c)
-- [x] 拓扑排序: [解答](data_structure/topological_sort.c)
