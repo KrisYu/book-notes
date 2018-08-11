@@ -52,4 +52,16 @@
 - [x] 顺序表查找: [解答](data_structure/sequential_search.c)
 - [x] 拆半查找/插入查找/斐波那契查找: [解答](data_structure/binary_search.c)
 - [x] 二叉排序树: [解答](data_structure/bst.c)
+- [x] avl树: [解答](data_structure/avl.c)
+- [x] 2-3树: [解答](data_structure/2-3-tree.txt)
+- [x] B树: [解答](data_structure/B-tree.txt)
 
+### 排序
+
+- [x] 冒泡排序: [解答](data_structure/bubble_sort.c)
+- [x] 简单选择排序: [解答](data_structure/selection_sort.c)
+- [x] 直接插入排序: [解答](data_structure/insertion_sort.c)
+- [x] 希尔排序: [解答](data_structure/shell_sort.c)
+- [x] 堆排序: [解答](data_structure/heapsort.c)
+- [x] 归并排序: [解答](data_structure/mergesort.c)
+- [x] 快速排序: [解答](data_structure/quicksort.c)

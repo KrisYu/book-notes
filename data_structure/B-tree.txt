@@ -1,0 +1,10 @@
+https://en.wikipedia.org/wiki/B-tree
+
+1. Every node has at most m children.
+2. Every non-leaf node (except root) has at least ⌈m/2⌉ children.
+3. The root has at least two children if it is not a leaf node.
+4. A non-leaf node with k children contains k−1 keys.
+5. All leaves appear in the same level
+
+
+https://en.wikipedia.org/wiki/B%2B_tree

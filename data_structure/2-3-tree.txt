@@ -1,0 +1,8 @@
+2 - 3 tree: https://en.wikipedia.org/wiki/2-3_tree
+
+2 - 3 - 4 tree: https://en.wikipedia.org/wiki/2–3–4_tree
+
+2 - 3 树的目的就是为了打破一个结点只有一个元素，如果我们往一个结点塞入 1/2 个元素，拥有 2/3 个孩子，
+那么这棵树的高度就可以明显下降。
+
+只是插入与删除就涉及到更多的拆分以及合并。
