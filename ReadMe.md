@@ -9,10 +9,11 @@
 - [ ] Core Data by Tutorials: [Code](https://github.com/KrisYu/Core-Data-by-Tutorials)  [Notes](Core_Data_by_Tutorials)
 - [x] Objective-C高级编程 ： iOS与OS X多线程和内存管理
 - [x] Effective Objective-C 2.0 : [笔记](EOCNotes.md)
-- [x] 大话数据结构 : [笔记](data_structre.md)
 - [ ] 大话设计模式: [笔记](Design_Pattern_notes.md)  [Design-Pattern-For-iOS](https://github.com/huang303513/Design-Pattern-For-iOS) [Swift-X-Design-Patterns](https://github.com/kingcos/Swift-X-Design-Patterns)
+- [x] 程序员修炼之道 The pragmatic Programmer: [笔记](The_pragmatic_programmer/The_pragmatic_programmer.md)
 - [ ] 各类文档：http://idup.club/library
-
+- [x] 大话数据结构 : [笔记](data_structre.md)
+- [ ] 数据结构&算法补充 : [笔记](data_structre_supply.md)
 
 skills make my life easier:
 
