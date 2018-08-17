@@ -1,0 +1,23 @@
+### Chapter 1
+
+- echo $? 检查C程序的退出状态
+
+- 编译型语言 C  vs 解释型语言 Python
+
+- 编译器 GNU Compiler Collection :  gcc 
+
+- compile & run : 
+  gcc file.c -o file 
+  ./file
+ 
+- compile & run together:
+  gcc file.c -o file && ./file
+
+- 在类Unix系统中，之所以要加 ./ 是因为运行程序必须制定其所在的目录，除非程序的目录已经列在了PATH环境变量中
+
+- C语言不支持现成的字符串（再强调一次），以字符为元素的数组
+
+- C语言中布尔值使用数字表示的，0表示假，任何不等于0则为真
+
+### Chapter 2
+ 
