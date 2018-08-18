@@ -1,4 +1,4 @@
-### Chapter 1
+### Chapter 1 
 
 - echo $? 检查C程序的退出状态
 
@@ -19,5 +19,63 @@
 
 - C语言中布尔值使用数字表示的，0表示假，任何不等于0则为真
 
+
 ### Chapter 2
+
+- 指针就是存储器中某条数据的地址。指针避免副本和共享数据。
+
+- 找出变量的存储器地址，用&运算符， printf("x保存在 %p\n", &x);
+
+- 得到变量的地址： int *address_of_x = &x;  读取地址中的内容 int value_stored = *address_of_x; 改变地址中的内容：*address_of_x = 99; 
+  &运算符：取地址， *接收地址，告诉地址中的数据，*对指针解引用。
+  所谓指针变量，也就是地址变量。
+
+- sizeof("Turtiles!") 返回 9，包含8个字符+ '\0'
+
+- 数组变量好比指针，创建了一个数组，数组变量就可以当指针用。数组变量指向数组中第一个元素，如果把函数参数声明为数组，它会被当做指针处理。
+
+- sizeof 是一个运算符，运算符就是一串指令；而函数会调到一段独立的代码
+
+- 数组变量 vs 指针 
+  sizeof 数组是数组的大小 char s[] = "How big is it?", sizeof(s) = 15
+  char *t = s; sizeof(t) = 4 or 8.
+  数组的地址是数组的地址： & s = s
+  &t != t 表示的是变量t的地址
+  数组变量不能指向其它地方，比如 s = t 会报编译错误。
+  把数组赋值给指针，会丢失一些信息，所谓退化。
+
+- scanf("%d", &i); scanf("%39s", name); scanf需要更新内容，所以需要使用指针取地址。
+  我们需要限制scanf字符串长度，否则如果长度超过，我们会有segmentation fault 或者abort trap（这个trap是在kernal mode地方切换的trap么？）
+
+- fgets
+  char food[5];
+  printf("Enter favorite food: ");
+  fgets(food, sizeof(food), sstdin);  
+  这里的sizeof 包括 '\0'的长度， scanf则需要长度-1
+  如果food是一个指针，我们需要显式给出长度
+
+- 修改只读字符串，出现bus error错误
+  所以建议这样： const char *s = "some string";
+  这样如果尝试修改报错。
+
+- char cards[] 是一个数组，而且必须立即赋值，但是如果是函数参数 void stack_deck(char cards[]) 与 void stack_deck(char *cards) 等效
+
+- 局部变量保存在栈上
+
+
+### Chapter 2.5
+
+- string.h  
+
+- 数组的数组 和 指针的数组
+
+
+### Chapter 3 
+
  
+
+
+
+
+
+
