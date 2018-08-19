@@ -72,7 +72,84 @@
 
 ### Chapter 3 
 
+- 使用 < 重新定向标准输入，比如 ./geo2json < gpsdata.csv
+
+- 使用 > 重新定向标准输出，比如 ./geo2json < gpsdata.csv > output.json
+
+- printf("") = fprintf(stdout, "")
+
+- ./secret_messages < secret.txt > message1.txt 2 > message2.txt 重定向标准输出 以及 2> 重定向标准错误
+
+- pipe | 连接一个进程的标准输出与另一个进程的标准输入。例子 (./bermuda | ./geo2json) < spooky.csv > output.json
+
+- 创建数据流，读取数据： FILE *in_file = fopen("input.txt", "r") 
+  写数据 FILE *out_file = fopen("output.txt", "w");
+  数据流创建完毕后，可以用fprintf往数据流中打印数据 fprintf(out_file, " xxxx ");
+  用fscanf读取数据： fscanf(in_file, "%79[^\n]\n", sentence);
+  关闭数据流 fclose(in_file); fclose(out_file);
+
+- 安全检查
+  FILE *in;
+  if (!(in = fopen("我不存在.txt", "r"))){
+    fprintf(stderr, "无法打开文件.\n");
+    return 1;
+  }
+
+- ps -ae 显示所有进程，包括后台运行的进程。
+  tail -f logfile.txt 持续显示文件末尾新添加的数据。
+
+- unistd.h 不是标准库，是POSIX库
+
+  rocket-to -e 4 -a Brasilia Tokyo London
+  
+  #include <unistd.h>
+  
+  while ((ch = getopt(argc, argv, "ae:")) != EOF) 
+  switch(ch) { // 注意这里先有swtich，再有大括号
+  ...
+  case 'e':
+   engine_count = optarg;  // 注意这里engine_count 会变成4
+  ...  
+  }
  
+  argc -= optind;
+  argv += optind;
+  // 这两行作用是跳过已经读取的选项
+
+- '--' 可以用来隔开参数和选项
+
+
+### Chapter 4
+
+- 整形 / 整形 = 舍入的整数
+
+- limits.h 和 float.h 中能有： INT_MAX, INT_MIN, sizeof(int), FLT_MAX, FLT_MIN, sizeof(float)
+
+- 预处理 / 编译 / 汇编 / 链接
+
+- extern int password; 共享变量
+
+- 多个文件编译： gcc file1.c file2.c -o file 
+
+- 把源代码编译为目标文件 gcc -c *.c  
+  把目标文件链接起来     gcc *.o -o launch
+  唯一修改过的文件 gcc -c thruster.c  重新创建thruster.o文件  gcc *.o -o launch 重新链接所有目标文件
+
+- make 工具: 依赖项 生成方法
+  makefile or Makefile 
+  
+  launch.o: launch.c launch.h thruster.h
+  	gcc -c launch.c
+  thruster.o: thruster.h thruster.c
+  	gcc -c thruster.c
+  launch: launch.o thruster.o
+   	gcc launch.o thruster.o -o launch
+  生成方法是tab
+
+- autoconf 可以生成makefile
+
+  
+
 
 
 
