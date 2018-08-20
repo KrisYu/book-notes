@@ -148,11 +148,126 @@
 
 - autoconf 可以生成makefile
 
+
+Chapter 5
+
+- struct
+
+- 为结构变量赋值相当于叫计算机复制数据。在C语言中，所有赋值都会复制数据，如果想复制数据的引用，就应该赋指针。
+
+- typedef
+
+- (*t).age 指向乌龟的指针，  (*t).age 乌龟的年龄，注意括号，因为.会被优先计算。t->age = (*t).age
+
+- union 
+  typedef union {
+    short count;
+    float weight;
+    float volume;
+  } quantity;
+  quantity q = { .weight = 1.5 };  // designated initializer
+  quantity q;
+  q.volume = 3.7;
   
+- 枚举 enum  结构与联合用分号分割数据项，而枚举用逗号
+
+- 位字段 bitfield 
+  typedef struct {
+    unsigned int low_pass_vcf: 1;
+    ...
+    ...
+  } synth;
 
 
+- Chapter 6
 
+- 递归结构要有名字
 
+- malloc 分配 有借有还  有 free 归还 #includ <stdlib.h>
 
+- malloc 返回通用指针 void *
 
+- 复制字符串 strdup 
+  char *s = "Mona Lisa";
+  char *copy = strdup(s);
+  需要free
+
+- valgrind --leak-check=full ./file
+ 
+  
+### Chapter 7
+
+- 函数名是指向函数的指针
+
+- 函数指针
+  int (*warp_fn)(int);
+  warp_fn = go_to_warp_speed;
+  warp_fn(4);
+
+  char** (*names_fn)(char *, int);
+  names_fn = album_names;
+  char** results = name_fn("Sacha Distel", 1972);
+  调用的时候可以加也可以不加括号 比如match(AD[i]) 或者 (*match)(AD[i])
+  也可以这样写：find(sports_or_workout) 或 find(&sports_or_workout)
+  
+- 函数指针
+  返回类型 (*指针变量)(参数类型)
+
+- qsort(void *array, size_t length, size_t item_size, int (*compar)(const void *, const void *));
+  
+  int scores[] = {543, 323, 32, 554, 11, 3, 112};
+  qsort(scores, 7, sizeof(int) compare_scores);
+  int compare_scores(const void *score_a, const void *score_b) {
+    int a = *(int *)score_a;
+    int b = *(int *)score_b;
+    return a - b;
+  }
+  
+  因为comapr传入的是指针，有些状况下，我们应当留下指针，更方便计算，void * 指针可以被转换成别的任何方便的指针
+
+- 比较字符串
+  int compare_names(const void* a, const void* b)
+  {
+    char** sa = (char **)a;
+    // 字符串是字符指针，所以得到的是指针的指针。
+    char** sb = (char **)b;
+    return strcmp(*sa, *sb);
+    // 运用*运算符取得字符串
+  }
+  字串符数组中的每一项都是字符指针（char *),当qsort调用比较器函数时，会发送两个指向数组元素的指针，也就是说比较器函数接收到的是指向字符指针的指针，在C语言中就是char **。
+
+- 函数指针数组
+  下方的response是我们定义的一个例子
+  void (*replies[]) (response) =  {dump, second_chance, marriage};
+  返回类型 (*指针变量）(参数类型)
+  例子： (replies[r[i].type])(r[i]);
+
+- 如果有函数 shoot() ,那么 shoot 和 &shoot 都指向 shoot() 函数
+  如果 fp 是函数指针，那么可以用 fp(参数，.....) 调用函数， 也可以用 (*fp)(参数, .....) 调用
+  qsort 接收指向比较器函数的指针，比较器函数接收两个指针，分别指向待排序数组中的两项
+
+- 可变参数函数(variadic function) 
+  #include <stdarg.h>
+  // 需要include standard arguments
+  // stdarg.h
+
+  void print_ints(int args,...)
+  // 必须要有一个普通参数，一般说来是告知可变参数的个数
+  {
+    va_list ap;
+    // 创建 va_list 保存传给函数的其它参数
+    va_start(ap, args);
+    // 说明可变参数从args开始
+    int i;
+    for( i = 0; i < args; i++) {
+      printf("argument: %i\n", va_arg(ap, int));
+      // 用va_arg读取 va_list 和 要读取参数的类型，这个例子中全是int 
+    }
+    va_end(ap);
+    // 销毁va_list
+  }
+  print_ints(3, 79, 101, 32); 
+  // 调用函数
+
+- 
 
