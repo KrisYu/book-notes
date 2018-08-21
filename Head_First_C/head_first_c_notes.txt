@@ -269,5 +269,149 @@ Chapter 5
   print_ints(3, 79, 101, 32); 
   // 调用函数
 
-- 
+ 
+### Chatper 8
+
+- 依赖文件的运行
+  gcc -c encrypt.c -o encrypt.o
+  gcc -c checksum.c -o checksum.o
+  gcc test_code.c encrypt.o checksum.o -o test_code 
+
+- 共享 .h 文件
+  把头文件复制到标准目录中 /usr/local/include 然后就可以用尖括号包含
+  在 include 中使用完整路径名 #include "/my_header_files/encrypth.h"
+  告诉 gcc 去哪里寻找头文件 gcc -I/my_header_files test_code.c ... -o test_code
+  
+- 共享 .o 文件
+  把 -o 放在目录共享的地方 gcc -I/my_header_files test_code.c /my_object_files/encrypt.o ...
+
+- nm libl.a
+  可以看文档内容
+
+- ar 命令可以创建存档
+  ar -rcs libhfsecurity.a encrypt.o checksum.o
+  r 表示文件存在则更新
+  c 表示创建存档时不显示反馈信息
+  s 告诉 ar 要在 .a 文件开头创建索引
+  .a 文件叫 libXXX.a
+  .a 文件可以保存在 /usr/local/lib 或者其它目录中 /my_lib
+
+- 运行的时候我们需要 gcc test_code.c -lhfsecurity -o test_code
+  或者 gcc test_code.c -L/my_lib -lhfsecurity -o test_code
+  这个匹配是这样看的，如果存档叫 libawesome.a 那么用 -lawesome 匹配
+
+- ar -t <文件名> 会列出存档中的目标文件
+
+- ar -x libhfsecurity.o encrypt.o 可以把 encrypt.o 提取出来
+
+- p367 更多 gcc, ar 例子
+
+- 动态库： gcc -I/includes -fPIC -c hfcal.c hfcal.o
+  -fPIC 位置无关代码
+  Windows       .dll
+  Linux / Unix  .so
+  Mac           .dylib
+  gcc -shared hfcal.o -o  /libs/libhfcal.(so/dylib)
+  使用
+  gcc -I/include -c elliptical.c -o elliptical.o
+  gcc elliptical.o - L/libs -lhfal -o elliptical 
+  p375 , p376 (needs reread this part)
+
+
+### Chapter 9
+
+- system 
+  system("dir D");
+  system("gedit");
+  system("say 'End of line'");
+
+- execl() 参数列表
+  execle() 参数列表 + 环境变量
+  execlp() 参数列表 + 搜索PATH 
+  execv() 参数数组
+  execve() 参数数组 + 环境变量
+  execvp() 参数数组 + 搜索PATH
+  p 406
+  #include <unistd.h>
+
+- 一旦调用系统进程，原进程就会种植，我们可以用fork来解决
+  fork() + exec() 运行子进程
+  pid_t pid = fork();
+  if (pid == -1) { ... }
+  if (!pid) { ... }
+
+
+### Chapter 10
+
+- 文件描述符 
+  0 键盘 标准输入
+  1 屏幕 标准输出
+  2 屏幕 标准错误
+  3 数据库连接  进程也可能打开其他形式的数据流
+
+- ./myprog > output.txt 2 > errors.log
+  ./myprog 2>&1
+
+- fileno() / dup2()
+  dup2(fileno(f), 1)
+  令1号描述符指向file f文件
+ 
+- 写一个error 函数
+  void error(char *msg) 
+  {
+    fprintf(stderr, "%s %s\n",msg, strerror(errno));
+    exit(1);
+  }
+
+  pid_t pid = fork()
+  if (pid == -1) {
+    error("无法克隆进程");
+  }
+
+  if (execle(...) == -1) {
+    error("无法运行脚本");
+  }
+
+- waitpid()
+  #include <sys/wait.h>
+  waitpid( pid, pid_status, options)
+  waitpid(pid, &pid_status, 0)
+  if (WEXITSTATUS(pid_status))
+    puts("Error status non-zero");
+  
+- pipe() 创建管道，返回两个描述符，fd[1] 向管道中写数据， fd[0] 从管道中读数据
+  int fd[2];
+  if (pipe(fd) == -1) {
+   error("Can't create the pipe");
+  }
+  p445 - p 449
+
+- curl/wget, mail/mutt, convert 
+
+- 信号 Ctrl - C 中断信号
+
+- sigaction
+  
+- kill KILL <pid> 送进程上西天
+
+- raise(SIGTERM); 信号升级
+
+- alarm() 不要同时使用 alarm() 和 sleep()
+
+
+### Chapter 11
+
+- HTTP 高层次协议， IP 低层次协议。 协议是一段结构化对话。
+ 
+- <#include sys/socket.h> 
+  int listener_d = socket(PF_INET, SOCK_STREAM, 9);
+  if (listen_d == -1)
+    error("无法打开套接字");
+
+- Bind 绑定， Listen 监听， Accept 接受， Begin 开始
+ 
+  
+
+
+ 
 
