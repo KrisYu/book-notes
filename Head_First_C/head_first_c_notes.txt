@@ -409,9 +409,40 @@ Chapter 5
     error("无法打开套接字");
 
 - Bind 绑定， Listen 监听， Accept 接受， Begin 开始
+
+- recv() 读数据 <读了几个字节> = recv(<描述符>, <缓冲区>, <要读取几个字节>， 0);
  
-  
+- 为每个客户端 fork() 一个子进程
+  克隆出子进程后，我们就可以关闭一些
+  close(connect_d);
+  close(listener_d);  
+
+- 注意 Ctrl - C 和 Ctrl - Z
+  Ctrl - Z 是 suspend，暂停，发送的信号是 SIGSTOP，之后还可以进入
+  Ctrl - C 是 kill，结束，发送的信号是SIGINT
+  https://superuser.com/questions/262942/whats-different-between-ctrlz-and-ctrlc-in-unix-command-line
+
+- 网络客户端
+  连上网络服务器之后，我们需要
+  GET命令
+  主机名
+  空行
+
+- 客户端： 连接远程端口， 开始通信
 
 
+### Chapter 12
+
+- 线程 pthread (POSIX线程)
+  线程函数的返回类型必须是 void *
+
+- 线程运行例子: argument.c beer.c
+
+- 非线程安全：两个线程读写相同的变量，就不安全。
+
+- 用互斥锁来管理交通
+  pthread_mutex_t a_lock = PTHREAD_MUTEX_INITIALIZER; 
+  互斥锁是一个全局变量。
+  上锁： pthread_mutex_lock(&a_lock);
+  解锁： pthread_mutex_unlock(&a_lock);
  
-
