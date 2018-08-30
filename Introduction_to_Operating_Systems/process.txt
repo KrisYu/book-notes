@@ -1,0 +1,172 @@
+
+- trap: user level 到 kernal level
+- process： active entity，一个Application可能launch多次（notepad开多个)，多个process，可能并不是正在running的那个 
+
+
+process 长这样：
+
+vmax
++----------------------+
+|      stack           |
++---------+------------+
+|         |            |
+|         v            |
+|                      |
+|        ^             |
+|        |             |
++--------+-------------+
+|      heap            |
++----------------------+
+|      data            |
++----------------------+
+|      text            |
++----------------------+
+v0
+
+v0 / vmax 是地址内存，但是这个是 virtual address（虚拟地址）
+实际上我们使用page tables 把它 map 到物理地址的不同之处，这样内存的管理更容易
+
+
+
+
+
+
+
++----------------------+
+|      stack           |
++---------+------------+
+|         |            |
+|         v            | <----+0x03c5
+|          x           |                 +----------------+
+|        ^             |                 |                |
+|        |             |                 +----------------+
++--------+-------------+                 |                |
+|      heap            |                 +----------------+
++----------------------+      0x0f0f+--> |       x        |
+|      data            |                 +----------------+
++----------------------+                 |                |
+|      text            |                 +----------------+
++----------------------+                 |                |
+   virtual memory                        +----------------+      +---------+---------+
+                                          physical memory        | 0x03c5  | 0x0f0f  |
+                                          DRAM                   +---------+---------+
+                                                                   page table entry
+
+
+
+OS 一定保持内存相关信息， page tables
+
+因为内存不够的时候我们还需要swap处理
+
++----------+
+|   p1     |
++----------+
+|   p2     |
++----------+
+|   p2     |
++----------+ +-->  +----------+
+|   p1     |       |          |
++----------+ <--+  +----------+
+  DRAM       swap      Disk
+
+ 
+ 
+两个process P1 和 P2 可能有完全相同的 virtual address space， OS会把它map到‘对应的’’正确的‘物理地址。
+
+
+application: 
+
+code -> assembly code
+
+OS 通过以下：
+
+program counter
+CPU registers
+Stack Pointer
+
+通过这些来知道 process doing
+
+OS 通过 PCB（ Process Control Block） 来知道process做啥
+
+- PCB process control block data structure: 每个process都有，当process创建的时候生成，其中一些域会经常改变，另一些则不那么经常
+
++--------------------------+
+|     process state        |
++--------------------------+
+|   process number         |
++--------------------------+
+|   program counter        |
++--------------------------+
+|     registers            |
++--------------------------+
+|   memory limits          |
++--------------------------+
+|  list of open files      |
++--------------------------+
+|       priority           |
++--------------------------+
+|    signal mask           |
++--------------------------+
+|   CPU scheduling info    |
++--------------------------+
+|         ...              |
++--------------------------+
+
+
+- context switch: CPU 切换 p1 和 p2, 切换之时信息都记录在PCB中，这样我们可以无缝继续程序
+switch CPU from context of one process to the context of another
+这个操作很贵: load * store instructions / cache（hot/cold cache）
+所以希望尽量少做这个操作
+
+-  process lifecycle:
+
+new / ready / running / waiting / terminated
+
+CPU 可以处理 ready / running
+
+- Process Creation: Process 创建它们的 child process
+比如 Shell 创建之后我们type ls/emacs 就创建了新的process
+
+fork : parent PCB 拷贝到 child PCB， child会立即开始执行
+exec : child PCB 会指向新的程序
+
+所以一般是call fork， 然后call exec
+
+- CPU scheduler:  因为ready queue中的process很多，所有由它来决定
+
+preempt / schedule / dispatch ： 以上操作需要做，但是需要尽量减少时间，需要efficiency
+
+这个 scheduler 也是run 在CPU 之上，为了提高CPU 效率，我们需要将process schedule time增长
+
+time slice = Tp , 需要增长 Tp
+
+- I/O
+
+I/O 之后进ready queue
+
+                                            +------+
+              +---------------+             |      +---------->
++---------->  |  ready queue  |             | CPU  |
+    +-------> |               +---------->  |      +---+
+    |         +----------------+            +------+   |
+    |                                                  |
+    |   +-----+   +-----------+      +------------+    |
+    | <-+ I/O +<--+ I/O queue +<-----+ I/O request| <--+
+    |   +-----+   +-----------+      +------------+    |
+    |                                                  |
+    |                         +--------------------+   |
+    | <-----------------------+ time slice expired | <-+
+    |                         +--------------------+   |
+    |                                                  |
+    |    +----------------+   +---------------------+  |
+    | <--+ child executes | <-+ fork a child        | <+
+    |    +----------------+   +---------------------+  |
+    |                                                  |
+    |    +-----------------+   +--------------------+  |
+    | <--+ interrupt occurs| <-+ wait for an interrupt |
+    +    +-----------------+   +---------------------^-+
+
+
+
+
+- IPC Inter Process Communication: message - passing IPC, shared memory IPC
