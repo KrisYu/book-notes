@@ -1,19 +1,37 @@
   iOS - Roadtrip
 
 
-  books
+### iOS related books
 
 - [x] iOS编程（第4版）: [Exerice Projects](https://github.com/KrisYu/iOS-Programming-The-Big-Nerd-Ranch-Guide)
-- [ ] 函数式 Swift [代码笔记](objccn-functional-swift)
-- [x] Programming with Objective C : [中文版](https://github.com/L1l1thLY/Programming-with-Objective-C-in-Chinese)
-- [ ] Core Data by Tutorials: [Code](https://github.com/KrisYu/Core-Data-by-Tutorials)  [Notes](Core_Data_by_Tutorials)
 - [x] Objective-C高级编程 ： iOS与OS X多线程和内存管理
-- [x] Effective Objective-C 2.0 : [笔记](EOCNotes.md)
-- [ ] 大话设计模式: [笔记](Design_Pattern_notes.md)  [Design-Pattern-For-iOS](https://github.com/huang303513/Design-Pattern-For-iOS) [Swift-X-Design-Patterns](https://github.com/kingcos/Swift-X-Design-Patterns)
-- [x] 程序员修炼之道 The pragmatic Programmer: [笔记](The_pragmatic_programmer/The_pragmatic_programmer.md)
+- [x] Effective Objective-C 2.0 : [笔记](EOC/EOCNotes.md)
+- [ ] 函数式 Swift [代码笔记](objccn-functional-swift)
+- [ ] Core Data by Tutorials: [Code](https://github.com/KrisYu/Core-Data-by-Tutorials)  [Notes](Core_Data_by_Tutorials)
 - [ ] 各类文档：http://idup.club/library
-- [x] 大话数据结构 : [笔记](data_structre.md)
-- [ ] 数据结构&算法补充 : [笔记](data_structre_supply.md)
+
+### 设计模式
+
+- [ ] 大话设计模式: [笔记](Design_Pattern/Design_Pattern_notes.md)  [Design-Pattern-For-iOS](https://github.com/huang303513/Design-Pattern-For-iOS) [Swift-X-Design-Patterns](https://github.com/kingcos/Swift-X-Design-Patterns)
+
+### 方法论
+
+- [x] 程序员修炼之道 The pragmatic Programmer: [笔记](The_pragmatic_programmer/The_pragmatic_programmer.md)
+
+### 数据结构与算法
+
+- [x] 大话数据结构 : [笔记](data_structure/data_structre.md)
+- [ ] 数据结构&算法补充 : [笔记](data_structure/data_structre_supply.md)
+
+### C相关
+
+- [ ] 笨办法学C语言 : [笔记](lcthw/lcthw.md)
+
+
+### ebooks resources
+
+- [x] [Programming with Objective C](https://github.com/L1l1thLY/Programming-with-Objective-C-in-Chinese)
+- [x] [跟我一起写Makefile (PDF重制版)](https://github.com/seisman/how-to-write-makefile)
 
 skills make my life easier:
 
@@ -36,19 +54,7 @@ skills make my life easier:
 
 
 
-learn c the hard way
 
-- [x] Makefile : [解答](lcthw/Makefile.txt)
-- [x] 字符串就是字节数组： [解答](lcthw/字符串就是字节数组.txt)
-- [x] 指向‘指向字符的指针’的指针: [解答](lcthw/指向‘指向字符的指针’的指针.txt)
-- [x] 指针名词: [解答](lcthw/指针名词.txt)
-- [x] 结构体: [解答](lcthw/结构体.txt)
-- [x] 堆vs栈: [解答](lcthw/堆vs栈.txt)
-- [x] 函数指针: [解答](lcthw/函数指针.txt)
-- [x] OOP: [解答](lcthw/OOP.txt)
-- [x] debug marco: [解答](lcthw/debug.txt)
-- [x] extern vs static: [解答](lcthw/extern_and_static.txt)
-- [x] I/O函数: [解答](lcthw/iofunction.txt)
 
 
 
