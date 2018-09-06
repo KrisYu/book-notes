@@ -25,13 +25,23 @@
 
 ### C相关
 
+- [x] Head First C : [笔记](Head_First_C/head_first_c_notes.txt)
+	- [x] [线程](Head_First_C/线程.md)
 - [ ] 笨办法学C语言 : [笔记](lcthw/lcthw.md)
+
 
 
 ### ebooks resources
 
 - [x] [Programming with Objective C](https://github.com/L1l1thLY/Programming-with-Objective-C-in-Chinese)
 - [x] [跟我一起写Makefile (PDF重制版)](https://github.com/seisman/how-to-write-makefile)
+
+
+### other could easily googled books
+
+- [x] C 语言常见问题集
+- [x] Little Book of Semaphores
+
 
 skills make my life easier:
 

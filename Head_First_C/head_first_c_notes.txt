@@ -149,7 +149,7 @@
 - autoconf 可以生成makefile
 
 
-Chapter 5
+### Chapter 5
 
 - struct
 
@@ -179,7 +179,7 @@ Chapter 5
   } synth;
 
 
-- Chapter 6
+### Chapter 6
 
 - 递归结构要有名字
 
