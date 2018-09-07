@@ -1,2 +1,9 @@
 # ignore code folder
 code/
+counter/
+
+# ignore the auto generated files
+*~
+
+# ignore the vim swap files
+*.sw[klmnop]

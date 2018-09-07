@@ -1,0 +1,39 @@
+semaphore 的实现的原理其实特别简单
+
+- 有一个 value，可以设定是任何值
+
+- 那么一个 thread 到达时候，就把它减一,发现 result 如果为负，那么这个thread
+  就会 block 它自己直到有另一个 thread 增加 semaphore
+
+- 如果一个 thread 增加 semaphore，如果有任何 threads
+  在等待的话，其中一个等待的 threads 就可以被 unblock
+
+
+> 这里之所以可以不考虑这个 value 被减一或者加一的同时性是因为这个操作是 atomic，姑且这样考虑，所以不会出现两个thread来同时减减（加加）。
+
+----------------------------
+
+如果这个 value 为正，那么代表它可以允许的threads， 如果为负，代表 blocked 的
+threads， 如果为0， 代表没有 threads 被 block waiting，但是如果有 thread
+尝试减一，那么它会被 block . 
+
+----------------------------
+所以配套函数,可以写成：
+
+fred = Semaphore(1)
+
+fred.increment()
+fred.decrement()
+
+fred.signal() // increment
+fred.wait()   // decrement
+
+fred.V()
+fred.P() 
+
+----------------------------
+
+mutex 应该就是这个值设定为 1, 每次只允许一个 thread 运行。
+
+
+

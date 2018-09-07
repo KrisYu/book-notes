@@ -29,6 +29,9 @@
 	- [x] [线程](Head_First_C/线程.md)
 - [ ] 笨办法学C语言 : [笔记](lcthw/lcthw.md)
 
+### OS
+
+- [x] semaphore: [semaphore](OS/semaphore.txt) 
 
 
 ### ebooks resources
@@ -41,6 +44,7 @@
 
 - [x] C 语言常见问题集
 - [x] Little Book of Semaphores
+- [x] Think-OS 
 
 
 skills make my life easier:
