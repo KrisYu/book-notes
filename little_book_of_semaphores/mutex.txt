@@ -1,0 +1,15 @@
+Mutex 就是把 semaphore 的值设定为1
+
+mutex.wait()
+  # critical section
+  count = count + 1
+mutex.signal()
+
+
+mutex 是1，那么任何一个 thread 到达就会执行 wait， wait 会将 semaphore
+减一，这样之后来的 thread 就需要等待直到 thread.singal()
+
+这里 critical section code 是故意 indent.
+
+
+这里也是一个典型的保护 critical section 的模式

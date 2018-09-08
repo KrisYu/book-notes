@@ -1,0 +1,10 @@
+Multiplex 很容易做到
+
+我们就把 semaphore 的 value 设定为我们想要同时最多执行的 threads 数量，设定为
+n.
+
+multiplex.wait()
+  critical section
+multiplex.signal()
+
+

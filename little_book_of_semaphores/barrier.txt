@@ -1,0 +1,29 @@
+nth thread 到达之后，所有的 threads 可以继续
+
+
+n = the number of threads
+count = 0
+mutex = Semaphore(1)
+barrier = Semaphore(0)
+
+
+rendezvous
+
+mutex.wait()
+  count = count + 1
+mutex.signal()
+
+if count == n : barrier.signal()
+
+barrier.wait()
+barrier.signal()
+
+critical point
+
+
+wait 和 signal 同时出现，有个名字 turnstile, allows one thread to pass at a
+time
+
+
+
+

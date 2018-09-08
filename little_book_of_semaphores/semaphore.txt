@@ -1,6 +1,6 @@
 semaphore 的实现的原理其实特别简单
 
-- 有一个 value，可以设定是任何值
+- 有一个 value，可以设定是int
 
 - 那么一个 thread 到达时候，就把它减一,发现 result 如果为负，那么这个thread
   就会 block 它自己直到有另一个 thread 增加 semaphore
@@ -13,9 +13,9 @@ semaphore 的实现的原理其实特别简单
 
 ----------------------------
 
-如果这个 value 为正，那么代表它可以允许的threads， 如果为负，代表 blocked 的
-threads， 如果为0， 代表没有 threads 被 block waiting，但是如果有 thread
-尝试减一，那么它会被 block . 
+如果这个 value 为正，那么代表它可以允许的threads 
+如果为负，代表 blocked 的 threads 
+如果为0， 代表没有 threads 被 block waiting，但是如果有 thread 尝试减一，那么它会被 block . 
 
 ----------------------------
 所以配套函数,可以写成：
@@ -31,9 +31,11 @@ fred.wait()   // decrement
 fred.V()
 fred.P() 
 
+// 如果要追求名字的意义的话
+fred.increment_and_wake_a_waiting_process_if_any()
+fred.decrement_and_block_if_the_result_is_negative()
 ----------------------------
 
-mutex 应该就是这个值设定为 1, 每次只允许一个 thread 运行。
 
 
 
