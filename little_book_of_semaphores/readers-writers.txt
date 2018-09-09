@@ -1,0 +1,122 @@
+### Readers-Writers
+
+这里的问题在于：
+
+1. 任何数量的 readers 可以同时在 critical section 读数据
+2. writers 必须有 exclusive access 对于 critical section
+
+int readers = 0
+mutex = Semaphore(1)
+roomEmpty = Semaphore(1)
+
+roomEmpty 为 1的时候表明没有任何 threads（readers or writers） in the critical
+section.
+
+
+- Writer
+
+roomEmpty.wait()
+  critical section for writers
+roomEmpty.signal()
+
+
+- Readers
+
+mutex.wait()
+  readers += 1
+  if readers == 1:
+    roomEmpty.wait()  # first in locks
+mutex.signal()
+
+# critical section for readers
+
+mutex.wait()
+  readers -= 1
+  if readers == 0:
+    roomEmpty.signal() # last out unlocks
+mutex.signal()
+
+
+- Lightswitch
+
+class Lightswitch:
+  def __init__(self):
+    self.counter = 0
+    self.mutex = Semaphore(1)
+
+  def lock(self, semaphore):
+    self.mutex.wait()
+      self.counter += 1
+      if self.counter == 1:
+        semaphore.wait()
+    self.mutex.signal()
+
+  def unlock(self, semaphore):
+    self.mutex.wait()
+      self.counter -= 1
+      if self.counter == 0:
+        semaphore.signal()
+   self.mutex.signal()
+
+- Readers-Writers initialization
+
+readLightswitch = Lightswitch()
+roomEmpty = Semaphore(1)
+
+readLightswitch.lock(roomEmpty)
+# critical section
+readLightswitch.unlock(roomEmpty)
+
+### Starvation
+
+虽然以上代码没有 deadlock 的隐患，但是因为如果一直有 reader 进入，那么有
+writer starve 的可能（饿死hhh），因为一直无法进入写的 critical section
+
+readSwitch = Lightswitch()
+roomEmpty = Semaphore(1)
+turnstile = Semaphore(1)
+
+- writer
+
+turnstile.wait()
+  roomEmpty.wait()
+  # critical section for Writers
+turnstile.signal()
+
+roomEmpty.signal()
+
+
+- reader
+
+turnstile.wait()
+turnstile.signal()
+
+readSwitch.lock(roomEmpty)
+  # critical section for readers
+readSwitch.unlock(roomEmpty)
+
+
+### Writer-priority readers-writers
+
+readSwitch = Lightswitch()
+writeSwitch = Lightswitch()
+noReaders = Semaphore(1)
+noWriters = Semaphore(1)
+
+- reader
+
+noReaders.wait()
+  readSwitch.lock(noWriters)
+noReaders.signal()
+
+  # critical section for readers
+
+readSwitch.unlock(noWriters)
+
+- writer
+
+writeSwitch.lock(noReaders)
+  noWriters.wait()
+    # critical section for Writers
+  noWriters.signal()
+writeSwitch.unlock(noReaders)

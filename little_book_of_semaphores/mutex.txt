@@ -11,5 +11,11 @@ mutex 是1，那么任何一个 thread 到达就会执行 wait， wait 会将 se
 
 这里 critical section code 是故意 indent.
 
+mutex 需要知道的信息有：
+locked？
+owner： 目前 thread
+blocked_threads: 鉴于它会把目前的等待threads 都 block， 感觉在 mutex.wait()
+处排队的感觉
 
+   
 这里也是一个典型的保护 critical section 的模式

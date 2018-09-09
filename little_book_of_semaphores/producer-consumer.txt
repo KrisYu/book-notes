@@ -1,0 +1,83 @@
+### producer-consumer 
+
+mutex = Semaphore(1)
+items = Semaphore(0)
+local event
+
+
+- producer
+
+event = waitForEvent()
+mutex.wait()
+  buffer.add(event)
+  items.signal()
+mutex.signal()
+
+
+- consumer
+
+items.wait()
+mutex.wait()
+  event = buffer.get()
+mutex.signal()
+event.process()
+
+
+mutex 提供的是 buffer 的 exclusive access
+我们需要保护 buffer from 多线程的 producer / consumer
+
+- producer 提升版本
+
+event = waitForEvent()
+mutex.wait()
+  buffer.add(event)
+mutex.signal()
+items.signal()
+
+这样提升是比如我们有一个 consumer， 当 producer signal items，我们会马上
+block mutex， 此时这个 mutex 是被 producer hold的，这样提升就可以避免上述状况
+
+
+### producer- consumer with a finite buffer
+
+mutex = Semaphore(1)
+items = Semaphore(0)
+spaces = Sempahore(buffer.size())
+
+
+- consumer
+
+items.wait()
+mutex.wait()
+  event = buffer.get()
+mutex.signal()
+spaces.signal()
+
+event.processs()
+
+
+- producer
+
+event = waitForEvent()
+
+spaces.wait()
+mutex.wait()
+  buffer.add(event)
+mutex.signal()
+items.signal()
+
+其实这些‘代码’读起来都很符合逻辑
+
+对于消费者
+- 一旦等到items
+- mutex 锁住，开始处理buffer
+- mutex 解锁
+- 告知 spaces 有多余空间因为 consumer 消费了
+
+对于生产者
+
+- 一旦等到space
+- mutex 锁住
+- 开始添加事件入 buffer
+- mutex 解锁
+- 告知 items 有事件因为 producer 生产了
