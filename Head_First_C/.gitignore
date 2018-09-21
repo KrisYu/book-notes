@@ -1,6 +1,7 @@
 # ignore code folder
 code/
 counter/
+queue/
 
 # ignore the auto generated files
 *~
