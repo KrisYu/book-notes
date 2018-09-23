@@ -26,7 +26,13 @@
 ### C相关
 
 - [x] Head First C : [笔记](Head_First_C/head_first_c_notes.txt)
+	- [x] [文件描述符](Head_First_C/文件描述符.md)
 	- [x] [线程](Head_First_C/线程.md)
+	- [x] [套接字](Head_First_C/套接字.md)
+		- [x] [大端小端](Head_First_C/大端小端.md)
+		- [x] [服务器的简单的例子advice-server](Head_First_C/服务器的简单的例子advice-server.md)
+		- [x] [服务多个客户端](Head_First_C/服务多个客户端.md)
+		- [x] [客户端](Head_First_C/客户端.md)
 - [ ] 笨办法学C语言 : [笔记](lcthw/lcthw.md)
 
 ### OS
