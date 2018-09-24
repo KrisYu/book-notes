@@ -179,4 +179,4 @@ Connection closed by foreign host.
 telnet towel.blinkenlights.n
 ```
 
-[advice-server2.c](advice_server2.c) 基本上跟 [advice-server.c](advice_server.c) 一致，就增加了一点错误处理，同时解决了绑定端口的延时处理。
+[advice-server2.c](sample_code/advice_server2.c) 基本上跟 [advice-server.c](sample_code/advice_server.c) 一致，就增加了一点错误处理，同时解决了绑定端口的延时处理。
