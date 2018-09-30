@@ -53,7 +53,11 @@
 - [x] Little Book of Semaphores
 - [x] Think-OS 
 
+### 杂
 
+- [x] [浮点数 floating point 的表示](csapp/浮点数 floating point 的表示.md)
+- [x] [逻辑移位vs算术移位](csapp/逻辑移位vs算术移位.md)
+ 
 skills make my life easier:
 
 - gcc run oc file: `gcc main.m -o main -framework Foundation`
