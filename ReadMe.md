@@ -38,7 +38,7 @@
 
 ### OS
 
-- [x] semaphore: [semaphore](OS/semaphore.txt) 
+- [ ] semaphore
 
 
 ### ebooks resources
@@ -55,7 +55,7 @@
 
 ### 杂
 
-- [x] [浮点数 floating point 的表示](csapp/浮点数 floating point 的表示.md)
+- [x] [浮点数floating-point的表示.md](csapp/浮点数floating-point的表示.md)
 - [x] [逻辑移位vs算术移位](csapp/逻辑移位vs算术移位.md)
  
 skills make my life easier:
@@ -107,7 +107,7 @@ skills make my life easier:
 - [x] 汉字转拼音：[解答](Fake_Wechat/pinyin.txt)
 - [x] 画一个矩形的色块： [解答](Fake_Wechat/rectImage.txt)
 - [x] dispatch_once实现单例模式： [解答](Fake_Wechat/singleton.txt)
-- [x] tab bar highlight展示不同的图片: [解答](Fake_Wechat/TabbarHighlight.text)
+- [x] tab bar highlight展示不同的图片: [解答](Fake_Wechat/TabBarHightlight.txt)
 - [x] 手写UITableView: [解答](Fake_Wechat/ContactsTableView.txt)
 - [x] 不一样的 UITableViewCell设定方式: [解答](Fake_Wechat/ContactsTableViewCell.txt)
 - [x] 介绍UISearchController: [解答](Fake_Wechat/介绍UISearchController.md)
